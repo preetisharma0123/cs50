@@ -1,0 +1,16 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    title
+{% endblock %}
+
+{% block body %}
+    <h1>Auction closed!</h1>
+    <h3>
+         {{message}}
+    </h3>
+    
+ <a href = "{% url 'index' %}"> Back to Auction Listings</a></div></div></br>
+ <a href = "{% url 'create' %}"> Create Auction Listing?</a></div></div>
+
+{% endblock %}

@@ -1,0 +1,8 @@
+from django import forms
+from .models import *
+
+class ImageForm(forms.ModelForm):
+    """Form for image"""
+    class Meta:
+        model = Auction_listing
+        fields = ('image')

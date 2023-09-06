@@ -1,0 +1,29 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Category{{category.id}}:{{category.cat_name}} </h2>
+
+    <ul>      
+
+        <hr>
+        {% for listing in listings %}
+        <p><a href="{% url 'listing' listing.id %}">Listing {{listing.id}}: {{ listing.title }}</a></p></br>
+
+        <img src = "{{ listing.image }}" alt = "{{ listing.title }}" height = "200">
+        
+        <li>Price: ${{ listing.original_bid }}</li>
+        <li>Created: {{ listing.date }}</li>      
+
+        
+        <hr>
+
+        {% endfor %}
+
+    </ul>
+    
+    <div>
+    <a href = "{% url 'categories' %}"> All Categories</a></br>
+    <a href = "{% url 'index' %}"> Back to Auction Listings</a></div>
+    
+
+{% endblock %}

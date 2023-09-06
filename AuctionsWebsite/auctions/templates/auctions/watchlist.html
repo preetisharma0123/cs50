@@ -1,0 +1,27 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Your watchlist: </h2>
+
+    <ul>      
+
+        <hr>
+        {% for listing in listings%}
+        
+        <div>
+        <p><a href="{% url 'listing' listing.id %}">Listing {{listing.id}}: {{ listing.title }}</a></p></br>
+
+        <img src = "{{ listing.image }}" alt = "{{ listing.title }}" height = "200">
+        
+        <li>Price: ${{ listing.starting_value }}</li>
+        <li>Created: {{ listing.date }}</li></br>  
+    </div>
+        {% empty %}
+            <p> No listings watchlisted yet! </p>
+        <hr>
+
+        {% endfor %}
+
+    </ul>
+
+{% endblock %}

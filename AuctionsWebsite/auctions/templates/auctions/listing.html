@@ -1,0 +1,104 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Listing {{auction.id}}: {{auction.title}}</h2>
+    
+        <div class = "row mx-3">
+        {% if user.is_authenticated %}
+            {% if watchlisted %}
+                <form action = "{% url 'removeWatchlist' listing_id=auction.id %}" , method="POST">
+                {% csrf_token %}
+                <input type="submit", value="Remove from watchlist" class = "btn btn-primary"></br><br>
+            </form> 
+            {% endif %}       
+                
+            {% if not watchlisted %}
+                <form action = "{% url 'addWatchlist' listing_id=auction.id %}" , method="POST">
+                {% csrf_token %}
+                <input type="submit", value="Add watchlist" class = "btn btn-primary"></br><br>
+            </form> 
+            {% endif %}
+
+        {% endif %}
+    </li></ul>
+    </div>
+    <div>
+            
+    <img src = "{{auction.image}}" alt = "{{ auction.title }}" height = "400px" ></br>
+</div></
+
+    <div>
+        <p>{{ auction.content }}</p>
+        <h3>${{ bid_value}}.00</h3>
+
+    </div>
+
+        {% if user.is_authenticated %}
+           <div class= "form-group">
+            <form action = "{% url 'addBid' auction.id %}" , method="POST">
+                {% csrf_token %}
+                <label> {{ bid_count }}</label></br>                   
+                <input type="number" min = "0" name="bid" placeholder="Enter yoour Bid here" ></br></br>
+                
+                <input type="submit", value="Place Bid" class = "btn btn-primary"></br><br>
+            </form>
+        </div>
+        {% endif %}
+
+        <h4>{{message}}</h4>
+    
+        </div>    
+    <div>
+        <h3> Details</h3>
+    <ol>
+        <li>Created by: {{ auction.created_by }}</li>
+        <li>Category:{{ auction.category }}</li>
+        <li>Created on: {{ auction.date }}</li>
+    </ol>
+
+    </div>
+
+    <div>
+    <h4> Comments</h4>
+    <ul class="list-group">
+        {% for comment in comments %}
+
+    <li class = "list-group-item">{{comment}}</li>
+        
+        {% endfor %}
+    </ul>
+</div>
+
+    <div class= "form-group">
+        {% if user.is_authenticated %}
+            <form action = "{% url 'comment' auction.id %}" , method="POST">
+                {% csrf_token %}
+                         
+                <input type="text" name="comment" placeholder="Enter your comments here!" >
+                
+                <input type="submit", value="Comment" class = "btn btn-primary"></br><br>
+            </form>        
+        {% endif %}
+    </div>
+
+    </div>
+    <hr>
+
+    <div>
+        
+        {% if user.is_authenticated and user.email == auction.created_by.email %}
+                
+                <form action = "{% url 'close_listing' auction.id %}" , method="POST">
+                {% csrf_token %}
+                <input type="submit", value="Close_Auction" class = "btn btn-primary"></br><br>
+            </form>        
+                
+        {% endif %}
+    </div>
+
+    
+
+    <a href = "{% url 'index' %}"> Back to Auction Listings</a></div></div>
+    <a href = "{% url 'categories' %}"> All Categories</a>
+
+{% endblock %}

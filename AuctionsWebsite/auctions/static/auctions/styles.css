@@ -1,0 +1,32 @@
+body {
+    padding: 10px;
+}
+
+.search{
+    width: 100%;
+    font-size: 15px;
+    line-height: 15px;
+    display: flex;
+    align-items: stretch;
+
+}
+
+.bar{
+    list-style-type: none;
+    display:  flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding:  20px 20px 20px;
+
+}
+
+.nav-link{
+
+    height: 1.25rem;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+    display: flex;
+    background: "blue";
+
+}
