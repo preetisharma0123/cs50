@@ -11,12 +11,15 @@
     <a class="btn btn-sm btn-outline-primary" href="{% url 'logout' %}">Log Out</a>
     <hr>
 
-    <div id="emails-view">
+    <div id="emails-view">        
+    </div>
+
+    <div id="email-view">        
     </div>
 
     <div id="compose-view">
         <h3>New Email</h3>
-        <form id="compose-form">
+        <form id="compose-form" action="{% url 'compose' %}" method="post">
             <div class="form-group">
                 From: <input disabled class="form-control" value="{{ request.user.email }}">
             </div>
@@ -30,6 +33,8 @@
             <input type="submit" class="btn btn-primary"/>
         </form>
     </div>
+    
+    
 {% endblock %}
 
 {% block script %}

@@ -43,6 +43,11 @@ def compose(request):
         try:
             user = User.objects.get(email=email)
             recipients.append(user)
+            if request.user == user:
+                return JsonResponse({
+                "error": f"Email sender and recipient cannot be same."
+            }, status=400)
+
         except User.DoesNotExist:
             return JsonResponse({
                 "error": f"User with email {email} does not exist."
@@ -64,6 +69,7 @@ def compose(request):
             body=body,
             read=user == request.user
         )
+        
         email.save()
         for recipient in recipients:
             email.recipients.add(recipient)
