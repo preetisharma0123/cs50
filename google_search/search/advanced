@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Search</title>
+        <link rel="stylesheet" href = "style.css">
+    </head>
+    <body>
+          <div>
+            <ul class = "bar">
+                <li class = "bar-item"><a href = "index.html">google search</a></li>
+            </ul>
+        </div>
+          
+    </body>
+</html> 
