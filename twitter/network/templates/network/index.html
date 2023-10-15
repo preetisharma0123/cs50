@@ -6,15 +6,15 @@
     <h2 class="p-2"> All Posts</h2>
 
     <div class="p-3 m-3 border border-dark-subtle">       
-        <form action="{% url 'post' %}" method="post">
+        <form>
             {% csrf_token %}       
             <div class=" col form-group mb-3">
                     <label for="new_posts" class="form-label"><strong>New Post</label>
-                    <textarea class=" mb-2 form-control" id="exampleFormControlTextarea1" rows="3" name="post_content"></textarea>
-                    <button  type="submit" class="btn btn-primary"> Post</button>
+                    <textarea id="post_content" class=" mb-2 form-control"  rows="3" name="post_content"></textarea>
+                    <button id="submit" type="submit" class="btn btn-primary"> Post</button>
             </div>       
         </form>
     </div>
-    
+    <ul id="posts"></ul>
 </div>
 {% endblock %}

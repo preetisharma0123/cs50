@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from datetime import datetime   
@@ -18,13 +18,16 @@ def post(request):
         post_content = request.POST["post_content"]
         user = request.user
         crearted_at = datetime.now()
-        print(post_content, user, crearted_at) 
+        print(content, created_by, timestamp) 
+        
+        try:
+          post = Post.objects.create_post(created_by = user, timestamp = crearted_at, content = post_content)
+          post.save()
+          return JsonResponse()
 
-        #TODO: Add model
-        # post = Post.objects.create_post(username = user, crearted_at = crearted_at, post_content = post_content)
-        # post.save()
-        return HttpResponseRedirect(reverse("index"))
-
+        except:
+            return JsonResponse({},500)
+            
 def login_view(request):
     if request.method == "POST":
 

@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+    db:
+        image: postgres
+
+    web:
+        build: .
+        volumes:
+            - .:/cs50\twitter\docker-compose.yml
+
+        ports:
+            - "8000:8000"
