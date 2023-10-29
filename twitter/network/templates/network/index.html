@@ -3,18 +3,26 @@
 {% block body %}
     
 <div>
+    <h4 id = 'followers'></h4>
+    
     <h2 class="p-2"> All Posts</h2>
 
-    <div class="p-3 m-3 border border-dark-subtle">       
+    <div class="p-3 m-3 border border-dark-subtle" id = form>  
+
         <form>
             {% csrf_token %}       
             <div class=" col form-group mb-3">
-                    <label for="new_posts" class="form-label"><strong>New Post</label>
+                    <label for="post_content" class="form-label"><strong>New Post</label>
                     <textarea id="post_content" class=" mb-2 form-control"  rows="3" name="post_content"></textarea>
                     <button id="submit" type="submit" class="btn btn-primary"> Post</button>
             </div>       
         </form>
     </div>
-    <ul id="posts"></ul>
+    
 </div>
+
+<div id="all-posts-view"></div>
+
+<div id="post-view"></div>
+ 
 {% endblock %}

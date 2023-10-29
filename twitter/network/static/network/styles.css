@@ -1,0 +1,82 @@
+.custom-button {
+    border: none; /* Remove border */
+    font-weight: bold; /* Make text bold */
+    background-color: transparent; 
+    color: royalblue;
+    font-size: larger;
+    margin: 0px 0px 2px;
+    padding: 0px;
+    outline: none;
+}
+
+.buttonLike{
+    
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 22px;
+    color: red;
+    outline: none;
+}
+
+.like-container {
+    display: flex; /* Use flexbox layout */
+    align-items: center; /* Center items vertically */
+    outline: none;
+}
+
+.like-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 22px;
+    color: red;
+    margin: 0px 0px 2px;
+    outline: none;
+}
+
+
+
+.like-count {
+    font-weight: normal;
+    font-size: 22px;
+    background: none;
+    border: none;
+    color: darkslategrey;
+    margin: 0px 0px 2px;
+    outline: none;
+}
+
+.like-button, .like-button:focus {
+    outline: none !important;
+} 
+
+.profile-container {
+    display: flex; /* Use flexbox layout */
+    align-items: right; /* Center items vertically */
+    outline: none;
+    text-align: left;
+
+}
+
+.user {
+    color: #8F00FF ;
+    font-size: 28px;
+    background: none;
+    border: none;
+    font-weight: bold;
+    font-family:  monospace; 
+}
+
+
+
+
+.follow {
+    color: #8F00FF ;
+    font-size: 25px;
+    background: none;
+    border: none;
+    font-weight: bold;
+    font-family: monospace;
+}
