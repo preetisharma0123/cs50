@@ -1,7 +1,7 @@
 # Wikipedia like online encyclopedia
 Design a Wikipedia-like online encyclopedia.
 
-** Disclaimer: The project provided with utility functions for conversion of Markdown to HTML and 
+** Disclaimer: The project provided with utility functions for conversion of Markdown to HTML. 
 
 ## Features Developed
 
