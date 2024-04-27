@@ -25,4 +25,7 @@ Description: Developed an encyclopedia web application using Django and Python, 
 
 ## Demo
 
-[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/8GotRzBqKZ0/0.jpg)](https://www.youtube.com/watch?v=8GotRzBqKZ0)
+https://github.com/preetisharma0123/cs50-projects/assets/13076473/a5b21ef6-0904-40c4-9c14-f79adf94b221
+
+
+
