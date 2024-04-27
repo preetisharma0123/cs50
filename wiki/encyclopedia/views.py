@@ -58,6 +58,7 @@ def new_entry(request):
     else:
         title = request.POST['title']
         content = request.POST['content']
+        content = "# " + title + "\n" + content
         if util.get_entry(title) is not None:
                 return render(request,"encyclopedia/error.html",{
             "message": "Entry already Exists"  

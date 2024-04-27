@@ -22,3 +22,7 @@ Description: Developed an encyclopedia web application using Django and Python, 
 - Django url to function mapping
 - HTML Page Rendering
 - Error handling
+
+## Demo
+
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/8GotRzBqKZ0/0.jpg)](https://www.youtube.com/watch?v=8GotRzBqKZ0)
