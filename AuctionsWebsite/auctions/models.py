@@ -12,7 +12,7 @@ class User(AbstractUser):
       return "{}".format(self.email)
 
 class Category(models.Model):
-    cat_name = models.CharField(max_length=100,blank = False)
+    cat_name = models.CharField(max_length=100,blank = False, unique = True)
 
     def __str__(self):
         return f"{self.cat_name}"
