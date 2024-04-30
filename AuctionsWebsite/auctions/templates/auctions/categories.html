@@ -7,7 +7,7 @@
 
         <hr>
         {% for category in cat_all %}
-        <li><a href= "{% url 'commodities' category.id %}">Category  {{category.id}}:  {{ category.cat_name }}</a></li></br>
+        <li><a href= "{% url 'commodities' category.id %}">{{ category.cat_name.capitalize }}</a></li></br>
         
         {% endfor %}
 
