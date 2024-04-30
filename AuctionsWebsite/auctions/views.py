@@ -10,7 +10,7 @@ from .models import *
 
 
 def index(request):
-    activeListings = Auction_listing.objects.filter(isActive = True)   
+    activeListings = Auction_listing.objects.filter(isActive = True)  
 
     return render(request, "auctions/index.html", {
         "listings": activeListings,
@@ -28,32 +28,37 @@ def listing(request,listing_id):
             bid_value = auction.starting_value
             
         else:
-            bid_count = auction.bids.count()
-            bid = auction.bids.aggregate(Max('bid_value'))
-            bid_value = int(bid["bid_value__max"])
-            max_bid = auction.bids.filter(bid_value =bid_value).values()[0]
 
+
+            max_bid = Bid.objects.filter(auction_listing=listing_id).order_by('-bid_value').first()
+            bid_value = max_bid.bid_value
+            winner = max_bid.created_by.username.capitalize()
+
+            winner_email = max_bid.created_by
+            owner = auction.created_by.username.capitalize()
+            owner_email = auction.created_by
+            
 
         if auction.isActive:
             return render(request, "auctions/listing.html", {
                 "auction": auction,
                 "bid_count": f" {bid_count} bid(s) so far. Please make sure that your bid value is greater than ${bid_value}.",
                 "comments":comments,
-                "bid_value":bid_value, 
+                "bid_value": bid_value, 
                 "watchlisted":watchlisted           
                 })
        
         elif (request.user == max_bid.created_by and not auction.isActive):
 
             return render(request, "auctions/closed.html",{
-            "message": "Congratulation!!! You won the auction by ${bid_value}"
+            "message": F"Congratulation!!! You won the auction by ${bid_value}. You can contact the auction owner - {owner} at {owner_email}."
             })
 
         else:
-
+            print("max bid value in lisiting: closed",bid_value)
             return render(request, "auctions/closed.html",{
-            "message": "listing no longer active.Bid is won by ${bid_value}"
-            })
+                "message": f"listing no longer active. Bid is won by ${bid_value} by user- {winner}.",
+                })
 
 
     except Exception:
@@ -138,23 +143,32 @@ def addBid(request, listing_id):
 
 
 def close_listing(request, listing_id):
-    auction = Auction_listing.objects.get(pk =listing_id)
-    bid_count = auction.bids.count()
-    if not bid_count :
+    # Get current auction if exists
+    try:
+        auction = Auction_listing.objects.get(pk =listing_id)
+        bid_count = auction.bids.count()
+        if not bid_count :
             bid_value = auction.starting_value
             
-    else:
-            
-        bid = auction.bids.aggregate(Max('bid_value'))
-        bid_value = int(bid["bid_value__max"])
-        max_bid = auction.bids.filter(bid_value =bid_value).values()[0]
+        else:
+
+            max_bid = Bid.objects.filter(auction_listing=listing_id).order_by('-bid_value').first()
+            bid_value = max_bid.bid_value
+            won_by = max_bid.created_by.username.capitalize()
+            winner_email = max_bid.created_by
+
+    except Auction.DoesNotExist:
+        return render(request, "auctions/error.html", {
+            "message": "Auction id doesn't exist"
+        })
+
 
     if request.method == "POST":
         if request.user.is_authenticated and request.user.email == auction.created_by.email:
             auction.isActive = False
             auction.save()
             return render(request, "auctions/closed.html",{
-                "message": f"listing closed successfully! Bid has won by ${bid_value}"
+                "message": f"listing closed successfully!. Bid has won by ${bid_value} by user - {won_by}. Please contact user at email: {winner_email}"
             })
                 
         else:
