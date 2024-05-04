@@ -69,6 +69,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'project3.wsgi.application'
+DEFAULT_AUTO_FIELD='django.db.models.AutoField' 
+
 
 
 # Database
