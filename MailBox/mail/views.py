@@ -31,7 +31,7 @@ def compose(request):
 
     # Check recipient emails
     data = json.loads(request.body)
-    emails = [email.strip() for email in data.get("recipients").split(",")]
+    emails = [email.strip() for email in data.get("recipients").split(",")] # remove any leading or trailing zeros from recipients email
     if emails == [""]:
         return JsonResponse({
             "error": "At least one recipient required."
@@ -71,9 +71,16 @@ def compose(request):
         )
         
         email.save()
+
+        email_print = email.serialize()
+        print("email before recipients", email_print)
+
         for recipient in recipients:
             email.recipients.add(recipient)
         email.save()
+
+        email_print2 = email.serialize()
+        print("email after recipients", email_print2)
 
     return JsonResponse({"message": "Email sent successfully."}, status=201)
 
