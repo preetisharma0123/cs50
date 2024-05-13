@@ -18,6 +18,7 @@ class Posts(models.Model):
     content = models.CharField(max_length=64, blank = False, unique = True)
     timestamp = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User,on_delete=models.CASCADE, blank = False, related_name="user_posts")
+    
 
     def serialize(self):
         return {

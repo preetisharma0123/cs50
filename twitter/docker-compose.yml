@@ -1,16 +1,19 @@
 version: '3.8'
 
 services:
-    db:
+    database:
         image: postgres:14
         environment:
             POSTGRES_PASSWORD: postgres
-            POSTGRES_DB: postgres
+            POSTGRES_DB: twitter
 
     web:
         build: .
+        command: sh -c 'python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000'
         volumes:
             - .:/cs50\twitter\docker-compose.yml
+        env_file:
+            - .env
 
         ports:
             - "8000:8000"

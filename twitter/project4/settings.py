@@ -22,15 +22,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '13kl@xtukpwe&xj2xoysxe9_6=tf@f8ewxer5n&ifnd46+6$%8'
+SECRET_KEY = os.environ.get('SECRET_KEY', default='foo')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', "False") == "True"
-# if settings.DEBUG:
-#     urlpatterns += static(settings.MEDIA_URL,
-#                           document_root=settings.MEDIA_ROOT)
+DEBUG = os.environ.get('DEBUG', False) == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '[::1]']
 
 DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
@@ -79,13 +76,33 @@ WSGI_APPLICATION = 'project4.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+DATABASES = { 'default': {} }
+TEST_LOCAL = os.getenv("TEST_LOCAL", "false") == "true"
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+if os.getenv("PROD", "True") != "True" or TEST_LOCAL:
+    if not TEST_LOCAL:
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.postgresql",
+                "NAME": os.getenv("PG_NAME"),
+                "PORT": os.getenv("PG_PORT"),
+                "USER": os.getenv("PG_USER"),
+                "PASSWORD": os.getenv("PG_PASSWORD"),
+                "HOST": os.getenv("PG_HOST"),
+            },
+        }
+    else:
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.postgresql",
+                "NAME": "schedulesystem",
+                "PORT": 5432,
+                "USER": "postgres",
+                "PASSWORD": "postgres",
+                "HOST": "localhost",
+            },
+        }
+print("DATABASES:",DATABASES)
 
 AUTH_USER_MODEL = "network.User"
 
@@ -125,4 +142,5 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
+print(DEBUG)
