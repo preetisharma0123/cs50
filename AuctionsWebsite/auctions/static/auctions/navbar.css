@@ -17,10 +17,11 @@
   display: flex; /* Use flexbox for layout */
   align-items: center; /* Center items vertically */
   margin-left: auto; /* Align items to the right */
+  margin-right: 1rem;
 }
 
 /* Navbar items */
-.navbar a {
+.navbar-items a {
   color: white; /* White text color */
   padding: 10px 12px; /* Reduced padding around the links */
   text-align: center; /* Center the text */
@@ -29,9 +30,14 @@
 }
 
 /* Change color on hover */
-.navbar a:hover {
+.navbar-items a:hover {
   background-color: #ddd; /* Light background color on hover */
   color: black; /* Dark text color on hover */
+}
+
+.navbar a:hover {
+/*  background-color: #ddd; /* Light background color on hover */*/
+/*  color: black;  Dark text color on hover */
 }
 
 /* Responsive layout for mobile */
@@ -44,10 +50,7 @@
     width: 100%; /* Full width for links */
     margin-left: 0; /* Reset margin */
   }
-  .navbar a {
-    text-align: left; /* Align text to the left */
-    padding: 10px; /* Padding around links */
-  }
+
   .company-name {
     margin-bottom: 10px; /* Space between logo and links */
   }

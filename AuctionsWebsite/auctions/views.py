@@ -11,9 +11,12 @@ from .models import *
 
 def index(request):
     activeListings = Auction_listing.objects.filter(isActive = True)  
+    categories = Category.objects.all()
+
 
     return render(request, "auctions/index.html", {
         "listings": activeListings,
+        "categories": categories
             })
 
 def listing(request,listing_id):
@@ -80,10 +83,12 @@ def commodities(request,category_id):
 
     category = Category.objects.get(pk =category_id)
     activeListings = Auction_listing.objects.filter(isActive = True, category = category)
+    categories = Category.objects.all()
 
     return render(request,"Auctions/commodities.html",{
         "listings": activeListings,
-        "category": category
+        "category": category,
+        "categories": categories
 
          })
 

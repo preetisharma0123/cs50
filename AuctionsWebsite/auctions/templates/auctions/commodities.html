@@ -2,28 +2,35 @@
 
 {% block body %}
     <h2>Category{{category.id}}:{{category.cat_name}} </h2>
-
-    <ul>      
-
-        <hr>
+    <ul class="horizontal-list">
+        {% for category in categories %}
+            <li><a href="{% url 'commodities' category.id %}">{{ category.cat_name.capitalize }}</a></li>
+        {% endfor %}
+    </ul>
+    <div class="grid-container">
         {% for listing in listings %}
-        <p><a href="{% url 'listing' listing.id %}">Listing {{listing.id}}: {{ listing.title }}</a></p></br>
-
-        <img src = "{{ listing.image }}" alt = "{{ listing.title }}" height = "200">
-        
-        <li>Price: ${{ listing.original_bid }}</li>
-        <li>Created: {{ listing.date }}</li>      
-
-        
-        <hr>
+            <div class="grid-item">
+            
+                <p><a href="{% url 'listing' listing.id %}">Listing {{listing.id}}: {{ listing.title }}</a></p></br>
+                <div class=image-container>
+                    <a href="{% url 'listing' listing.id %}" class="grid-link">
+                    <img src = "{{listing.image}}" alt = "{{ listing.title }}" height = "200px"></br>
+                    </a>
+                </div>
+                <li>Price: ${{listing.starting_value}}</li>
+                <li>Created: {{listing.date}}</li>      
+            
+            </div>
 
         {% endfor %}
-
-    </ul>
+        {% if not listings %}
+            No listings found!!!
+        {% endif %}
+    </div>
     
-    <div>
-    <a href = "{% url 'categories' %}"> All Categories</a></br>
-    <a href = "{% url 'index' %}"> Back to Auction Listings</a></div>
+    <div class="fixed-bottom">
+        <a href = "{% url 'index' %}"> Back to Auction Listings</a>
+    </div>
     
 
 {% endblock %}

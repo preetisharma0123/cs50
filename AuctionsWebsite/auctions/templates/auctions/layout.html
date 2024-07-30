@@ -4,14 +4,16 @@
 <html lang="en">
     <head>
         <title>{% block title %}Auctions{% endblock %}</title>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <link href="{% static 'auctions/styles.css' %}" rel="stylesheet">
         <link href="{% static 'auctions/navbar.css' %}" rel="stylesheet">
         <link href="{% static 'auctions/listing.css' %}" rel="stylesheet">
+        <link href="{% static 'auctions/container.css' %}" rel="stylesheet">
+        <link href="{% static 'auctions/login.css' %}" rel="stylesheet">
+        <link href="{% static 'auctions/create.css' %}" rel="stylesheet">
     </head>
     <body>
 	<div class=navbar>
-        <span class="company-name">Auctions</span>
+        <a href="/" style="text-decoration:none;"><span class="company-name">Auctions</span></a>
         <div class=navbar-items>
             {% if user.is_authenticated %}
                 Signed in as <strong>{{ user.username }}</strong>.
@@ -23,7 +25,6 @@
                 <a class="nav-item" href="{% url 'create' %}">Create Listings</a>
                 <a class="nav-item" href="{% url 'watchlist' %}">Watchlist</a> </li>
                 <a class="nav-item" href="{% url 'logout' %}">Log Out</a>
-                <a class="nav-item" href="{% url 'categories' %}">Categories</a>
             {% else %}
                 <a class="nav-item" href="{% url 'login' %}">Log In</a>
                 <a class="nav-item" href="{% url 'register' %}">Register</a>
@@ -40,7 +41,9 @@
                 </form>
         </div>
         <hr>
+    <div class="container">
         {% block body %}
         {% endblock %}
+    </div>
     </body>
 </html>

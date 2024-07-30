@@ -1,0 +1,49 @@
+/* Container for the form */
+.form-container {
+    max-width: 600px; /* Set maximum width of the form */
+    margin: 20px auto; /* Center the form horizontally with margin */
+    padding: 20px; /* Padding inside the form */
+    border: 1px solid #ddd; /* Border around the form */
+    border-radius: 8px; /* Rounded corners for the form */
+    background-color: #f9f9f9; /* Light background color */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for a raised effect */
+}
+
+/* Style for form elements */
+.form-group {
+    margin-bottom: 15px; /* Space between form elements */
+}
+
+.form-group label {
+    display: block; /* Make labels block level for better layout */
+    margin-bottom: 5px; /* Space below the label */
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group textarea,
+.form-group select {
+    width: 100%; /* Full width of the container */
+    padding: 8px; /* Padding inside form fields */
+    border-radius: 4px; /* Rounded corners for form fields */
+    border: 1px solid #ccc; /* Border for form fields */
+}
+
+.form-group textarea {
+    height: 100px; /* Set a fixed height for textarea */
+    resize: vertical; /* Allow vertical resizing */
+}
+
+.btn-submit {
+    background-color: #007bff; /* Button background color */
+    color: #fff; /* Button text color */
+    border: none; /* Remove default border */
+    padding: 10px 20px; /* Padding inside the button */
+    border-radius: 4px; /* Rounded corners for the button */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 16px; /* Font size for the button */
+}
+
+.btn-submit:hover {
+    background-color: #0056b3; /* Darker color on hover */
+}

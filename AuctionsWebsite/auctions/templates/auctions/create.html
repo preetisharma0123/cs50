@@ -7,41 +7,42 @@
 {% block body %}
     <h2>Create Listings</h2></br>
 
-    <div>
-        <form action = "{% url 'create' %}", method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form.as_p }}
-            <div class = "form-group">
-                <label> Title:</label>                      
-                <input type="text" class = "form-group" id = "title" name="title" >
+    <div class="form-container">
+        <form action="{% url 'create' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            
+            <div class="form-group">
+                <label for="title">Title:</label>                      
+                <input type="text" id="title" name="title">
             </div>    
             
-            <div class = "form-group">
-                <label> Description:</label>                                  
-                <textarea name="content" class = "form-group" id = "content" ></textarea>
+            <div class="form-group">
+                <label for="content">Description:</label>                                  
+                <textarea name="content" id="content"></textarea>
             </div>    
             
-            <div class = "form-group">
-                <label> Starting bid:</label>                      
-                <input type="number" class = "form-group" id = "starting_value" name="starting_value">
-                
+            <div class="form-group">
+                <label for="starting_value">Starting bid:</label>                      
+                <input type="number" id="starting_value" name="starting_value">
             </div>
 
-            <div class = "form-group">
-                <label> Image</label>                      
-                <input type="text" name="image"  class = "form-group" id = "image" placeholder="Place URL for  the image here">
-
+            <div class="form-group">
+                <label for="image">Image:</label>                      
+                <input type="text" name="image" id="image" placeholder="Place URL for the image here">
             </div>
-            <div class = "form-group">
-                <label> Category:</label>                      
-                <select name="category" id="category" class = "form-group">      
+
+            <div class="form-group">
+                <label for="category">Category:</label>                      
+                <select name="category" id="category">      
                     {% for category in categories %}
                     <option value="{{ category }}">{{ category }}</option>
                     {% endfor %}
                 </select>
             </div>
         
-                <input type="submit", value="Submit" class = "btn btn-primary">
+            <input type="submit" value="Submit" class="btn-submit">
         </form>
+    </div>
    
 {% endblock %}

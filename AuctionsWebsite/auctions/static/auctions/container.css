@@ -1,0 +1,39 @@
+/* Base container styles */
+.container {
+    width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Responsive container widths */
+@media (min-width: 576px) { /* Extra small devices (phones) */
+    .container {
+        max-width: 540px;
+    }
+}
+
+@media (min-width: 768px) { /* Small devices (tablets) */
+    .container {
+        max-width: 720px;
+    }
+}
+
+@media (min-width: 992px) { /* Medium devices (desktops) */
+    .container {
+        max-width: 960px;
+    }
+}
+
+@media (min-width: 1200px) { /* Large devices (large desktops) */
+    .container {
+        max-width: 1140px;
+    }
+}
+
+@media (min-width: 1400px) { /* Extra large devices (larger desktops) */
+    .container {
+        max-width: 1320px;
+    }
+}

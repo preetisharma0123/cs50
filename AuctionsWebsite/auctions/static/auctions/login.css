@@ -1,0 +1,61 @@
+/* Centering login box */
+.login-box {
+    width: 100%;
+    max-width: 400px; /* Adjust as needed */
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    text-align: center; /* Center text and form inside the box */
+}
+
+.login-box h2 {
+    margin-bottom: 20px;
+}
+
+.message {
+    color: #d9534f; /* Red color for error messages */
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+p {
+    margin-top: 20px;
+}
+
+/* Form inputs */
+.login-container input {
+    box-sizing: inherit;
+    width: 100%; /* Ensure inputs take up full width of their container */
+    margin-bottom: 15px; /* Space between input fields */
+    padding: 10px; /* Padding inside input fields */
+    border-radius: 4px; /* Rounded corners for input fields */
+    border: 1px solid #ccc; /* Border for input fields */
+}

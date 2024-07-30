@@ -73,3 +73,25 @@ body {
   opacity: 1; /* Initial opacity for the image */
 }
 
+
+.horizontal-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap; /* Allows items to wrap to the next line if they don't fit */
+}
+
+.horizontal-list li {
+    margin: 0 15px; /* Adjust the spacing between items */
+}
+
+.horizontal-list a {
+    text-decoration: none;
+    color: #007bff; /* Bootstrap link color or adjust as needed */
+    font-weight: bold; /* Optional: makes links bold */
+}
+
+.horizontal-list a:hover {
+    text-decoration: underline; /* Optional: adds underline on hover */
+}
