@@ -1,0 +1,71 @@
+/* Container for the navbar */
+.navbar {
+  background-color: #333; /* Dark background color */
+  overflow: hidden; /* Clear floats */
+  padding: 10px 20px; /* Padding around the navbar */
+  position: fixed; /* Fix the navbar at the top */
+  top: 0; /* Position it at the top */
+  width: 100%; /* Full width */
+  z-index: 1000; /* Ensure it stays above other content */
+  display: flex; /* Use flexbox for layout */
+  align-items: center; /* Center items vertically */
+  justify-content: space-between; /* Space between logo and items */
+}
+
+/* Navbar items container */
+.navbar-items {
+  display: flex; /* Use flexbox for layout */
+  align-items: center; /* Center items vertically */
+  margin-left: auto; /* Align items to the right */
+}
+
+/* Navbar items */
+.navbar a {
+  color: white; /* White text color */
+  padding: 10px 12px; /* Reduced padding around the links */
+  text-align: center; /* Center the text */
+  text-decoration: none; /* Remove underline */
+  font-size: 17px; /* Font size */
+}
+
+/* Change color on hover */
+.navbar a:hover {
+  background-color: #ddd; /* Light background color on hover */
+  color: black; /* Dark text color on hover */
+}
+
+/* Responsive layout for mobile */
+@media screen and (max-width: 600px) {
+  .navbar {
+    flex-direction: column; /* Stack items vertically */
+  }
+  .navbar-items {
+    flex-direction: column; /* Stack links vertically */
+    width: 100%; /* Full width for links */
+    margin-left: 0; /* Reset margin */
+  }
+  .navbar a {
+    text-align: left; /* Align text to the left */
+    padding: 10px; /* Padding around links */
+  }
+  .company-name {
+    margin-bottom: 10px; /* Space between logo and links */
+  }
+}
+
+/* Add a logo or branding */
+.navbar .logo {
+  font-size: 25px; /* Larger font size for the logo */
+  font-weight: bold; /* Bold text */
+  padding: 0 10px; /* Padding around the logo */
+}
+
+/* Specific styling for the company name */
+.company-name {
+  font-family: 'Arial', sans-serif; /* Custom font family */
+  color: #ff6347; /* Tomato color */
+  font-size: 28px; /* Larger font size */
+  font-weight: bold; /* Bold text */
+  text-transform: uppercase; /* Uppercase text */
+  letter-spacing: 2px; /* Spacing between letters */
+}
