@@ -1,5 +1,5 @@
 /* Container for the form */
-.form-container {
+.form-container-create {
     max-width: 600px; /* Set maximum width of the form */
     margin: 20px auto; /* Center the form horizontally with margin */
     padding: 20px; /* Padding inside the form */
@@ -19,11 +19,11 @@
     margin-bottom: 5px; /* Space below the label */
 }
 
-.form-group input[type="text"],
-.form-group input[type="number"],
+.form-group input,
+.form-group input,
 .form-group textarea,
 .form-group select {
-    width: 100%; /* Full width of the container */
+    width: 95%; /* Full width of the container */
     padding: 8px; /* Padding inside form fields */
     border-radius: 4px; /* Rounded corners for form fields */
     border: 1px solid #ccc; /* Border for form fields */

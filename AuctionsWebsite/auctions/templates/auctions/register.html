@@ -2,12 +2,13 @@
 
 {% block body %}
 
+
+{% if message %}
+    <div class="alert-message">{{ message }}</div>
+{% endif %}
+
+<div class="form-container">
     <h2>Register</h2>
-
-    {% if message %}
-        <div>{{ message }}</div>
-    {% endif %}
-
     <form action="{% url 'register' %}" method="post">
         {% csrf_token %}
         <div class="form-group">
@@ -25,6 +26,7 @@
         <input class="btn btn-primary" type="submit" value="Register">
     </form>
 
-    Already have an account? <a href="{% url 'login' %}">Log In here.</a>
+    <p>Already have an account? <a href="{% url 'login' %}">Log In here.</a></p>
+</div>
 
 {% endblock %}

@@ -5,9 +5,10 @@
 {% endblock %}
 
 {% block body %}
-    <h2>Create Listings</h2></br>
+    
 
-    <div class="form-container">
+    <div class="form-container-create">
+        <h2>Create Listings</h2></br>
         <form action="{% url 'create' %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}

@@ -1,0 +1,56 @@
+/* Style for the form container */
+.form-container {
+  max-width: 400px; /* Maximum width of the form box */
+  margin: 20px auto; /* Center the container horizontally with some top and bottom margin */
+  padding: 20px; /* Padding inside the box */
+  background-color: #fff; /* White background for the form box */
+  border: 1px solid #ddd; /* Light gray border */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  text-align: center;
+}
+
+/* Style for alert messages */
+.alert-message {
+  padding: 10px;
+  margin-bottom: 20px;
+  background-color: #f8d7da; /* Light red background for errors */
+  color: #721c24; /* Dark red text for errors */
+  border: 1px solid #f5c6cb; /* Border color */
+  border-radius: 4px; /* Rounded corners */
+}
+
+/* Basic styling for form controls */
+.form-group {
+  margin-bottom: 15px; /* Space between form fields */
+}
+
+.form-control {
+  width: 95%; /* Full width of the form group */
+  padding: 10px; /* Padding inside form fields */
+  border: 1px solid #ccc; /* Light gray border for inputs */
+  border-radius: 4px; /* Rounded corners for inputs */
+}
+
+.btn-primary {
+  background-color: #007bff; /* Primary button background color */
+  border: none; /* Remove default border */
+  color: white; /* White text color */
+  padding: 10px 20px; /* Padding inside the button */
+  border-radius: 4px; /* Rounded corners for button */
+  cursor: pointer; /* Pointer cursor on hover */
+  font-size: 16px; /* Font size for the button text */
+}
+
+.btn-primary:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+a {
+  color: #007bff; /* Link color */
+  text-decoration: none; /* Remove underline */
+}
+
+a:hover {
+  text-decoration: underline; /* Underline on hover */
+}
