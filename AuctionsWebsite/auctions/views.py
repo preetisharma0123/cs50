@@ -10,7 +10,7 @@ from .models import *
 
 
 def index(request):
-    activeListings = Auction_listing.objects.filter(isActive = True)  
+    activeListings = Auction_listing.objects.filter(isActive = True).order_by('-date')
     categories = Category.objects.all()
 
 

@@ -12,7 +12,7 @@
         {% for listing in listings %}
             <div class="grid-item">
             
-                <p><a href="{% url 'listing' listing.id %}">Listing {{listing.id}}: {{ listing.title }}</a></p></br>
+                <p><a href="{% url 'listing' listing.id %}">{{ listing.title }}</a></p></br>
                 <div class=image-container>
                     <a href="{% url 'listing' listing.id %}" class="grid-link">
                     <img src = "{{listing.image}}" alt = "{{ listing.title }}" height = "200px"></br>
