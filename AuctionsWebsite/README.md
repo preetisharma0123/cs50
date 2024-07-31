@@ -21,3 +21,6 @@ Design an eBay-like e-commerce auction site that will allow users to post auctio
 - SQL
 - Django Models
 - Django admin
+
+## Demo
+![](./demo.gif) 
