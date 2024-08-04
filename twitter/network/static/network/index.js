@@ -1,83 +1,81 @@
-
 // Wait for page to load
 document.addEventListener('DOMContentLoaded', function() {
 
     // Use buttons to toggle between views
-    document.querySelector('#all_posts').addEventListener('click', all_posts);    
+    document.querySelector('#all_posts').addEventListener('click', all_posts);
     document.querySelector('#following').addEventListener('click', following);
-    document.querySelector('form').addEventListener('submit', new_post);
-    
+    document.querySelector('#create_post_form').addEventListener('submit', new_post);
+
     // By default, load all posts
     all_posts();
     document.addEventListener('click', event => {
-    // Find what was clicked on
-    const element = event.target;
+        // Find what was clicked on
+        const element = event.target;
 
-    // Check if the user clicked on a hide button
-    if (element.id === 'username') {
+        // Check if the user clicked on a hide button
+        if (element.id === 'username') {
 
-        const username = element.textContent
+            const username = element.textContent
 
-        profile_page(username);
-        console.log(username)
-    }
-});
-    
-    
-    
+            profile_page(username);
+            console.log(username)
+        }
+    });
+
+
+
 
     // Select the submit button and post content to be used later
-    const submit = document.querySelector('#submit');
-    const newPost = document.querySelector('#post_content');
-    
+    const create_post_button = document.querySelector('#create_post_button');
+    const post_content = document.querySelector('#post_content');
+
 
     // Disable submit button by default:
-    submit.disabled = true;
+    create_post_button.disabled = true;
 
     // Listen for input to be typed into the input field
-    newPost.onkeyup = () => {
-        if (newPost.value.length > 0) { // Changed 'content' to 'value' to get the input value
-            submit.disabled = false;
+    post_content.onkeyup = () => {
+        if (post_content.value.length > 0) { // Changed 'content' to 'value' to get the input value
+            create_post_button.disabled = false;
         } else {
-            submit.disabled = true;
+            create_post_button.disabled = true;
         }
-    }   
-            
-    
+    }
+
+
 });
 
 
-function load_post(id){
+function load_post(id) {
 
     fetch(`/all_posts/${id}`)
-    .then(response => response.json())
-    .then(post => {
+        .then(response => response.json())
+        .then(post => {
 
-    console.log(post);
-    document.querySelector('#all-posts-view').style.display = 'none';
-    document.querySelector('#post-view').style.display = 'block';
-    document.querySelector('#form').style.display = 'none';
+            console.log(post);
+            document.querySelector('#all-posts-view').style.display = 'none';
+            document.querySelector('#form').style.display = 'none';
 
-    // Apply formatting logic to the timestamp once
-    const formattedTimestamp = formatPostDate(post['timestamp']);
-            
+            // Apply formatting logic to the timestamp once
+            const formattedTimestamp = formatPostDate(post['timestamp']);
 
-    document.querySelector('#post-view').innerHTML = `
+
+            document.querySelector('#post-view').innerHTML = `
      <div class="col-3"><strong>${post['created_by']}</strong></div></br>
                 <div class="col-6"><div class="row">${post['content']}</div></div>
                 <div class="col-3">${formattedTimestamp}</div>
             `;
-    
-})
-.catch(error => {
-    console.error('Error fetching post:', error);
-})
+
+        })
+        .catch(error => {
+            console.error('Error fetching post:', error);
+        })
 }
 
-function all_posts(username){
+function all_posts(username) {
 
     document.querySelector('#all-posts-view').style.display = 'block';
-    document.querySelector('#post-view').style.display = 'none';
+    // document.querySelector('#post-view').style.display = 'none';
 
 
     // Load all posts
@@ -90,119 +88,142 @@ function all_posts(username){
     }
 
     fetch(url)
-    .then(response => {
+        .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             return response.json();
         })
-    .then(postsData => {
-        all_post_view.innerHTML = ''; // Clear previous posts
-        // loop through each post
-        console.log(postsData)
-        postsData.posts.forEach(post => {
+        .then(postsData => {
+            all_post_view.innerHTML = ''; // Clear previous posts
+            // loop through each post
+            console.log(postsData)
+            postsData.posts.forEach(post => {
 
-        const newPostElement = document.createElement('div');
-        newPostElement.className = 'm-3 row border border-dark-subtle';
+                const newPostElement = document.createElement('div');
 
-        // Apply formatting logic to the timestamp once
-        const formattedTimestamp = formatPostDate(post['timestamp']);
-            
-        console.log(post)
-
-        // Create a clickable username element
-        const usernameElement = document.createElement('button');
-        usernameElement.textContent = post['created_by'];
-        usernameElement.id = 'username'; 
-        usernameElement.className = 'custom-button'; 
-
-
-        newPostElement.innerHTML = `
-
-            <div class="w-100 mt-2 " >
-                <div class="card-body ">
-                        <div>
-                        <button type="button" class=" custom-button"></button></div>
-                        <p class="h6 card-text">${post['content']}</p>
-                        <p class="fw-normal"><small class="text-body-secondary">${formattedTimestamp}</small></p>
-                        <div class="like-container" >
-                            <p class="like-button" id = "like-image"></p>
-                            <span class="like-count" id = "likes"> ${post['total_likes'] ? post['total_likes'] : "0"}</span>
+                // Apply formatting logic to the timestamp once
+                const formattedTimestamp = formatPostDate(post['timestamp']);
+                newPostElement.innerHTML = `
+                <div class="card" >
+                    <div class="px-3 pt-4 pb-2">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <img style="width:50px" class="me-2 avatar-sm rounded-circle"
+                                    src="https://api.dicebear.com/6.x/fun-emoji/svg?seed=Mario" alt="Avatar">
+                                <div>
+                                    <h5 class="card-title mb-0"><a href="#"> ${post['created_by']} </a></h5>
+                                </div>
+                            </div>
                         </div>
-                        <p class="fw-normal"><small class="text-body-secondary" id = "comments">Comments: ${post['total_comments'] ? post['total_comments'] : "0" }</small></p>
-                        
-                      
-            </div>
-                   
+                    </div>
+                    <div class="card-body ">
+                        <div>
+                            <p class="fs-6 fw-light text-muted">${post['content']}</p>
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <span id="like-image"></span>
+                                    <span id = "likes">${post['total_likes'] ? post['total_likes'] : "0"}</span>
+                                </div>
+                                <div>
+                                    <span class="fs-6 fw-light text-muted"> <span class="fas fa-clock"> </span> ${formattedTimestamp} </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="comment_section">
+                           
 
+                        </div>
+                    </div>
             `;
 
-        newPostElement.querySelector('.custom-button').appendChild(usernameElement);
+                // Like/Unlikelogic
+                const buttonLike = document.createElement('button');
 
-        // Like/Unlikelogic
-        const buttonLike = document.createElement('button'); 
+                buttonLike.className = post.likes ? " buttonLike fa-solid fa-heart " : "buttonLike fa-regular fa-heart ";
 
-        buttonLike.className = post.likes ? " buttonLike fa-solid fa-heart " : "buttonLike fa-regular fa-heart "; 
-        
-        // Update the button text based on the current post's like status
-        buttonLike.innerHTML = post.likes ? "" : "";
+                // Update the button text based on the current post's like status
+                buttonLike.innerHTML = post.likes ? "" : "";
 
 
-        buttonLike.addEventListener('click', function() {
+                buttonLike.addEventListener('click', function() {
 
-           
-            // Like button click logic
-            
-            //buttonLike.innerHTML = "Like" ? "Unlike" : "Like"; // update button inner HTML
-            fetch(`/all_posts/${post.id}/like`, {
-                method: 'PUT',
-                body: JSON.stringify({
-                likes: !post.likes
-            })
-                })
-            .then(response => response.json())
-            .then(updatedPost => {
 
-                // Toggle the like status
-                post.likes = updatedPost.likes;
+                    // Like button click logic
 
-                // Update the like count in the HTML
-                const likeCountElement = newPostElement.querySelector('#likes');
-                likeCountElement.textContent = ` ${updatedPost.total_likes}`;
-                
-                buttonLike.innerHTML = post.likes  ? "" : "";
-                buttonLike.className = post.likes  ? " buttonLike fa-solid fa-heart" : "buttonLike fa-regular fa-heart"; 
-                })
-            .catch(error => {
-                console.error('Error updating like status:', error);
-        });
+                    //buttonLike.innerHTML = "Like" ? "Unlike" : "Like"; // update button inner HTML
+                    fetch(`/all_posts/${post.id}/like`, {
+                            method: 'PUT',
+                            body: JSON.stringify({
+                                likes: !post.likes
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(updatedPost => {
+
+                            // Toggle the like status
+                            post.likes = updatedPost.likes;
+
+                            // Update the like count in the HTML
+                            const likeCountElement = newPostElement.querySelector('#likes');
+                            likeCountElement.textContent = ` ${updatedPost.total_likes}`;
+
+                            buttonLike.innerHTML = post.likes ? "" : "";
+                            buttonLike.className = post.likes ? " buttonLike fa-solid fa-heart" : "buttonLike fa-regular fa-heart";
+                        })
+                        .catch(error => {
+                            console.error('Error updating like status:', error);
+                        });
+                });
+                newPostElement.querySelector('#like-image').appendChild(buttonLike);
+
+                const comment_content = document.createElement('textarea');
+                const create_comment_button = document.createElement('button')
+
+                // Disable submit button by default:
+                create_comment_button.disabled = true;
+                // Listen for input to be typed into the input field
+                comment_content.onkeyup = () => {
+                    if (comment_content.value.length > 0) { // Changed 'content' to 'value' to get the input value
+                        create_comment_button.disabled = false;
+                    } else {
+                        create_comment_button.disabled = true;
+                    }
+                }
+
+                create_comment_button.addEventListener('click', function(){
+                    fetch(`/all_posts/${post.id}/comments`, {
+                            method: 'PUT',
+                            body: JSON.stringify({
+                                comment: comment_content.value
+                            })
+                        })
+                        .then(response => {
+                            console.log(response);
+                        })
+                        .catch(error => {
+                            console.error('Error updating like status:', error);
+                        });
+                });
+                newPostElement.querySelector('#comment_section').appendChild(comment_content);
+                newPostElement.querySelector('#comment_section').appendChild(create_comment_button);
+
+                all_post_view.appendChild(newPostElement);
+                // Create and append a horizontal line after the card
+                all_post_view.appendChild(document.createElement('hr'));
+
             });
-
-       
-
-        // Add the new post element and buttonLike to the view........................
-        newPostElement.querySelector('#like-image').appendChild(buttonLike);
-        all_post_view.appendChild(newPostElement);
-
-        // Create and append a horizontal line after the card
-        const horizontalLine = document.createElement('hr');
-        all_post_view.appendChild(horizontalLine);
-
-        
-        //newPostElement.addEventListener('click', () => load_post(post['id']));
-          
-    });
         })
-        
+
     .catch(error => {
-            console.error('Error fetching posts:', error);
+        console.error('Error fetching posts:', error);
 
     });
 
-    
+
 }
 
-function new_post(event){
+function new_post(event) {
 
 
     event.preventDefault(); // Prevent the form from submitting
@@ -213,46 +234,50 @@ function new_post(event){
     const newPost = document.querySelector('#post_content');
 
     document.querySelector('#all-posts-view').style.display = 'block';
-    document.querySelector('#post-view').style.display = 'none';
+
+
 
     fetch('/new_post', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-        },
-    body: JSON.stringify({
-            content: newPost.value,
+            method: 'POST',
             headers: {
-        'Content-Type': 'application/json'  // Set the content type to JSON
-                    }
-  })
-     })
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                content: newPost.value,
+                headers: {
+                    'Content-Type': 'application/json' // Set the content type to JSON
+                }
+            })
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            console.log("Fetch request completed");
+            document.querySelector('#alert').innerHTML = `
+                <div class="alert alert-success alert-dismissible fade show" role="alert" id="success">
+                    Idea created Successfully
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `
+            return response.json();
 
+        })
+        .then(result => {
+            // Print result
+            console.log(result);
+            // Clear out input field:
+            newPost.value = '';
 
-    .then(response => {
-    if (!response.ok) {
-        throw new Error('Network response was not ok');
-    }
-    return response.json();
-    console.log("Fetch request completed");
-    
-})
-    .then(result => {
-      // Print result
-        console.log(result);
-        // Clear out input field:
-        newPost.value = '';
+            // Disable the submit button again:
+            submit.disabled = true;
+            console.log("all posts called");
+            all_posts();
 
-        // Disable the submit button again:
-        submit.disabled = true;
-        console.log("all posts called");
-        all_posts();
-    
-  })
-    .catch(error => {
-        console.error('There has been a problem with your fetch operation:', error);
-    });
-    
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+        });
+
 }
 
 function formatPostDate(dateString) {
@@ -263,33 +288,32 @@ function formatPostDate(dateString) {
         hour: '2-digit',
         minute: '2-digit'
     };
-    
+
     const postDate = new Date(dateString);
     const formattedDate = postDate.toLocaleDateString(undefined, options);
     return formattedDate;
 }
 
 
-function profile_page(username){
-    
+function profile_page(username) {
+
     ////TODO
 
     all_posts(username);
-    
-    
+
+
     document.querySelector('#all-posts-view').style.display = 'block';
-    document.querySelector('#post-view').style.display = 'none';
     document.querySelector('#form').style.display = 'none';
 
     fetch(`/profile_page/${username}`)
-    .then(response => {
+        .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             return response.json();
         })
-    .then(data  => {
-        const user = data.user;            
+        .then(data => {
+            const user = data.user;
 
             const followersCountElement = document.createElement('div');
             followersCountElement.className = 'm-3';
@@ -307,21 +331,21 @@ function profile_page(username){
 
             followers.appendChild(followersCountElement);
 
-            
+
 
         })
 
     .catch(error => {
-            console.error('Error fetching user data:', error);
-        });
+        console.error('Error fetching user data:', error);
+    });
 
 
-    
 
-        /*const buttonfollow = document.createElement('button');       
-        buttonfollow.className = post.follow ? "d-grid gap-2 d-md-flex justify-content-md-end btn btn-outline-info my-2 " : "d-grid gap-2 d-md-flex justify-content-md-end btn btn-primary my-2";
-        // Update the button text based on the current post's like status
-        buttonLike.innerHTML = post.follow ? "Unfollow" : "follow";*/
 
-    
+    /*const buttonfollow = document.createElement('button');       
+    buttonfollow.className = post.follow ? "d-grid gap-2 d-md-flex justify-content-md-end btn btn-outline-info my-2 " : "d-grid gap-2 d-md-flex justify-content-md-end btn btn-primary my-2";
+    // Update the button text based on the current post's like status
+    buttonLike.innerHTML = post.follow ? "Unfollow" : "follow";*/
+
+
 }

@@ -8,10 +8,11 @@ services:
             POSTGRES_DB: twitter
 
     web:
-        build: .
-        command: sh -c 'python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000'
+        build:
+            context: .
+        command: sh -c 'pwd && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000'
         volumes:
-            - .:/cs50\twitter\docker-compose.yml
+            - .:/usr/src/twitter
         env_file:
             - .env
 

@@ -14,18 +14,11 @@
     border: none;
     background: none;
     cursor: pointer;
-    font-size: 22px;
-    color: red;
+    font-size: 1rem;
     outline: none;
 }
 
-.like-container {
-    display: flex; /* Use flexbox layout */
-    align-items: center; /* Center items vertically */
-    outline: none;
-}
-
-.like-button {
+/*.like-button {
     background: none;
     border: none;
     cursor: pointer;
@@ -35,7 +28,7 @@
     margin: 0px 0px 2px;
     outline: none;
 }
-
+*/
 
 
 .like-count {
@@ -48,9 +41,9 @@
     outline: none;
 }
 
-.like-button, .like-button:focus {
+/*.like-button, .like-button:focus {
     outline: none !important;
-} 
+} */
 
 .profile-container {
     display: flex; /* Use flexbox layout */

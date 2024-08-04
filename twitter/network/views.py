@@ -200,6 +200,19 @@ def post_comments(request, post_id):
     if request.method == "GET":
         return JsonResponse(comments.serialize())
 
+    # Return post contents
+    elif request.method == "PUT":
+        data = json.loads(request.body)
+        comment = Comment(post=post, text=data['comment'], created_by=request.user)
+        comment.save()
+        post.save()
+        print(comment)
+        return JsonResponse({"success": "true"})
+    else:
+        return JsonResponse({
+            "error": "GET/PUT request required."
+        }, status=400)
+
 
 def login_view(request):
     if request.method == "POST":
