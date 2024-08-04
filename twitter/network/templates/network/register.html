@@ -1,30 +1,67 @@
 {% extends "network/layout.html" %}
 
 {% block body %}
-
-    <h2>Register</h2>
-
-    {% if message %}
-        <div>{{ message }}</div>
-    {% endif %}
-
-    <form action="{% url 'register' %}" method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <input class="form-control" autofocus type="text" name="username" placeholder="Username">
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card my-5">
+                <div class="card-header text-center">
+                    <h2>Register</h2>
+                </div>
+                <div class="card-body">
+                    {% if message %}
+                    <div class="alert alert-warning">{{ message }}</div>
+                    {% endif %}
+                    <form id="registerForm" action="{% url 'register' %}" method="post" onsubmit="return validateForm()">
+                        {% csrf_token %}
+                        <div class="form-group mb-3">
+                            <input class="form-control" autofocus type="text" name="username" id="username" placeholder="Username">
+                        </div>
+                        <div class="form-group mb-3">
+                            <input class="form-control" type="email" name="email" id="email" placeholder="Email Address">
+                        </div>
+                        <div class="form-group mb-3">
+                            <input class="form-control" type="password" name="password" id="password" placeholder="Password">
+                        </div>
+                        <div class="form-group mb-3">
+                            <input class="form-control" type="password" name="confirmation" id="confirmation" placeholder="Confirm Password">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Register</button>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    Already have an account? <a href="{% url 'login' %}">Log In here.</a>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <input class="form-control" type="email" name="email" placeholder="Email Address">
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="password" name="password" placeholder="Password">
-        </div>
-        <div class="form-group">
-            <input class="form-control" type="password" name="confirmation" placeholder="Confirm Password">
-        </div>
-        <input class="btn btn-primary" type="submit" value="Register">
-    </form>
+    </div>
+</div>
 
-    Already have an account? <a href="{% url 'login' %}">Log In here.</a>
+<script>
+    function validateForm() {
+        var username = document.getElementById("username").value;
+        var email = document.getElementById("email").value;
+        var password = document.getElementById("password").value;
+        var confirmation = document.getElementById("confirmation").value;
+        
+        var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
+        if (!username || !email || !password || !confirmation) {
+            alert("All fields must be filled out");
+            return false;
+        }
+
+        if (!emailPattern.test(email)) {
+            alert("Please enter a valid email address");
+            return false;
+        }
+
+        if (password !== confirmation) {
+            alert("Passwords do not match");
+            return false;
+        }
+
+        return true;
+    }
+</script>
 {% endblock %}

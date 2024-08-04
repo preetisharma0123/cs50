@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Use buttons to toggle between views
     document.querySelector('#all_posts').addEventListener('click', all_posts);
     document.querySelector('#following').addEventListener('click', following);
-    document.querySelector('#create_post_form').addEventListener('submit', new_post);
+    document.querySelector('#profile').addEventListener('click', profile_page);
 
     // By default, load all posts
     all_posts();
@@ -14,6 +14,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Check if the user clicked on a hide button
         if (element.id === 'username') {
+
+            const username = element.textContent
+
+            profile_page(username);
+            console.log(username)
+        }
+        if (element.id === 'profile') {
 
             const username = element.textContent
 
@@ -73,10 +80,10 @@ function load_post(id) {
 }
 
 function all_posts(username) {
+    // document.querySelector('#post-view').style.display = 'none'
 
     document.querySelector('#all-posts-view').style.display = 'block';
-    // document.querySelector('#post-view').style.display = 'none';
-
+    document.querySelector('#create_post_form').addEventListener('submit', new_post);
 
     // Load all posts
     const all_post_view = document.querySelector('#all-posts-view');
@@ -178,7 +185,11 @@ function all_posts(username) {
                 newPostElement.querySelector('#like-image').appendChild(buttonLike);
 
                 const comment_content = document.createElement('textarea');
+                comment_content.className = "fs-6 form-control"
+                comment_content.setAttribute("rows", 1)
                 const create_comment_button = document.createElement('button')
+                create_comment_button.innerHTML = "Post Comment"
+                create_comment_button.className = "btn btn-primary btn-sm my-2"
 
                 // Disable submit button by default:
                 create_comment_button.disabled = true;
@@ -296,56 +307,30 @@ function formatPostDate(dateString) {
 
 
 function profile_page(username) {
+    document.querySelector("#left-container").innerHTML = `
+        <div class="row justify-content-center py-3">
+            <div class="col-md-12">
+                <div class="card text-center">
+                    <div class="card-body py-5">
+                        <div class="d-flex justify-content-center mb-3">
+                            <img src="https://preetisharma.vercel.app/images/p1.png" alt="Profile Image" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
+                        </div>
+                        <h5 class="card-title mb-2">@username</h5>
 
-    ////TODO
-
-    all_posts(username);
-
-
-    document.querySelector('#all-posts-view').style.display = 'block';
-    document.querySelector('#form').style.display = 'none';
-
-    fetch(`/profile_page/${username}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            const user = data.user;
-
-            const followersCountElement = document.createElement('div');
-            followersCountElement.className = 'm-3';
-            followersCountElement.innerHTML = `
-            <div class="profile-container ">
-                <h2 class="user col-8 col-sm-7">${user.username}</h2>
-                <span class="follow col-8 col-sm-2">Following: ${user.following}</span>
-                <span class="follow col-8 col-sm-2">Followers: ${user.followers}</span>
+                        <div class="d-flex justify-content-around">
+                            <div>
+                                <h6 class="card-subtitle mb-2 text-muted">Followers</h6>
+                                <p class="card-text">1234</p>
+                            </div>
+                            <div>
+                                <h6 class="card-subtitle mb-2 text-muted">Following</h6>
+                                <p class="card-text">567</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            `;
-
-
-            const followers = document.querySelector('#followers');
-
-            followers.appendChild(followersCountElement);
-
-
-
-        })
-
-    .catch(error => {
-        console.error('Error fetching user data:', error);
-    });
-
-
-
-
-    /*const buttonfollow = document.createElement('button');       
-    buttonfollow.className = post.follow ? "d-grid gap-2 d-md-flex justify-content-md-end btn btn-outline-info my-2 " : "d-grid gap-2 d-md-flex justify-content-md-end btn btn-primary my-2";
-    // Update the button text based on the current post's like status
-    buttonLike.innerHTML = post.follow ? "Unfollow" : "follow";*/
-
-
+        </div>
+    </div>
+    `
 }

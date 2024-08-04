@@ -1,27 +1,42 @@
 {% extends "network/layout.html" %}
-
 {% block body %}
-    
-
-<div class="col-6" id="form">  
-    <form id="create_post_form">
-        {% csrf_token %}       
-        <div id="alert"></div>
-        <h4> Share yours ideas </h4>
-        <div class="row">
-            <div class="mb-3">
-                <textarea id="post_content" rows="3" class="form-control" rows="3"></textarea>
-            </div>
-            <div class="">
-                <button class="btn btn-dark" id="create_post_button" type="submit" class="btn btn-primary"> Share </button>
+<div class="container py-4">
+    <div class="row">
+        <div class="col-3 d-none d-md-block" id="left-container">
+            <div class="card overflow-hidden">
+                <div class="card-body pt-3">
+                    <ul class="nav nav-link-secondary flex-column fw-bold gap-2">
+                        <li class="nav-item">
+                            <a class="nav-link" id="all_posts" href="{% url 'index' %}">All Posts</a>
+                        </li>
+                        {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" id="following">Following</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="card-footer text-center py-2">
+                    <a class="btn btn-link btn-sm" id='profile'>View Profile </a>
+                </div>
             </div>
         </div>
-    </form>
-    <div class="mt-3" id="all-posts-view"></div>    
+        <div class="col-lg-6 col-sm-12 col-md-8" id="main-container">
+            <form id="create_post_form">
+                {% csrf_token %}
+                <div id="alert"></div>
+                <h4> Share yours ideas </h4>
+                <div class="row">
+                    <div class="mb-3">
+                        <textarea id="post_content" rows="3" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="">
+                        <button class="btn btn-dark" id="create_post_button" type="submit" class="btn btn-primary"> Share </button>
+                    </div>
+                </div>
+            </form>
+            <div class="mt-3" id="all-posts-view"></div>
+        </div>
+    </div>
 </div>
-
-
-
-
- 
 {% endblock %}
