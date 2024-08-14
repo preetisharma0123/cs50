@@ -72,15 +72,18 @@ def all_posts(request,username = None):
         # Retrieve comments and likes associated with the post
         
         likes = Like.objects.filter(post=post)
+        comments = Comment.objects.filter(post=post)
 
         # Retrieve comments and likes count
         total_likes = likes.count()
+        total_comments = comments.count()
 
         # Serialize post
         serialized_post_current = post.serialize()
 
         # Add number of comments and likes to the serialized post data
         serialized_post_current['total_likes'] = total_likes
+        serialized_post_current['total_comments'] = total_comments
 
         user_has_liked =  Like.objects.filter(post=post, liked_by = request.user).exists()
         serialized_post_current['likes'] = user_has_liked

@@ -104,6 +104,8 @@ function createPostElement(post) {
                         <div>
                             <span id="like-image"></span>
                             <span id="likes">${post.total_likes || "0"}</span>
+                            <span id="comments-image" class="fa-solid fa-message"></span>
+                            <span id="comments">${post.total_comments || "0"}</span>
                         </div>
                         <div>
                             <span class="fs-6 fw-light text-muted">
@@ -126,6 +128,16 @@ function createPostElement(post) {
     newPostElement.querySelector('#comment_section').appendChild(commentSection.create_comment_button);
 
     loadComments(post.id, newPostElement.querySelector('#comment_list'), 1, 3);
+
+    const expandButton = document.createElement('button');
+    expandButton.innerHTML = "Expand";
+    expandButton.className = "btn btn-secondary btn-sm my-2";
+    expandButton.addEventListener('click', () => {
+        openPostModal(post);
+    });
+
+    newPostElement.querySelector('.card-body').appendChild(expandButton);
+
 
     return newPostElement;
 }
@@ -202,7 +214,7 @@ function createCommentSection(post, newPostElement) {
     comment_content.onkeyup = () => {
         create_comment_button.disabled = comment_content.value.length === 0;
     }
-
+    const commentsList = newPostElement.querySelector('#comment_list');
     create_comment_button.addEventListener('click', function () {
         fetch(`/all_posts/${post.id}/comments`, {
             method: 'PUT',
@@ -210,7 +222,7 @@ function createCommentSection(post, newPostElement) {
         })
             .then(response => response.json())
             .then(comment => {
-                appendNewComment(newPostElement, comment);
+                appendNewComment(commentsList, comment, true);
                 comment_content.value = '';
                 create_comment_button.disabled = true;
             })
@@ -222,8 +234,8 @@ function createCommentSection(post, newPostElement) {
     return { comment_content, create_comment_button };
 }
 
-function appendNewComment(postElement, comment) {
-    const commentsList = postElement.querySelector('#comment_list');
+function appendNewComment(commentsList, comment, only_three) {
+    
 
     // Create new comment element
     const newCommentElement = document.createElement('div');
@@ -244,7 +256,7 @@ function appendNewComment(postElement, comment) {
     
     // Remove the oldest comment if there are already 3 comments
     const existingComments = commentsList.querySelectorAll('.comment');
-    if (existingComments.length >= 3) {
+    if (existingComments.length >= 3 && only_three) {
         commentsList.removeChild(existingComments[existingComments.length - 1]);
     }
 
@@ -253,6 +265,94 @@ function appendNewComment(postElement, comment) {
 }
 
 
+function openPostModal(post) {
+    const modal = document.createElement('div');
+    modal.className = "modal fade";
+    modal.id = "postModal";
+    modal.tabIndex = "-1";
+    modal.innerHTML = `
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">${post.created_by}'s Post</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="modal-post-content">${post.content}</div>
+                    <div id="modal-comment-list" class="comment-list"></div>
+                    <div id="loading-message" class="text-center mt-2"></div>
+                </div>
+                <div class="modal-footer">
+                    <textarea id="modal-comment-content" class="form-control" rows="2" placeholder="Add a comment..."></textarea>
+                    <button id="modal-create-comment-button" class="btn btn-primary">Post Comment</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    const commentContent = modal.querySelector('#modal-comment-content');
+    const createCommentButton = modal.querySelector('#modal-create-comment-button');
+    const commentList = modal.querySelector('#modal-comment-list');
+    const loadingMessage = modal.querySelector('#loading-message');
+    
+    createCommentButton.disabled = commentContent.value.length === 0;
+
+    commentContent.onkeyup = () => {
+        createCommentButton.disabled = commentContent.value.length === 0;
+    };
+
+    createCommentButton.addEventListener('click', () => {
+        fetch(`/all_posts/${post.id}/comments`, {
+            method: 'PUT',
+            body: JSON.stringify({ comment: commentContent.value })
+        })
+            .then(response => response.json())
+            .then(comment => {
+                appendNewComment(commentList, comment);
+                commentContent.value = '';
+                createCommentButton.disabled = true;
+            })
+            .catch(error => console.error('Error posting comment:', error));
+    });
+
+    // Infinite scroll setup
+    let page = 1;
+    const perPage = 10;
+    let loading = false;
+
+    function modalLoadComments(commentList) {
+        if (loading) return;
+        loading = true;
+        fetch(`/all_posts/${post.id}/comments?page=${page}&per_page=${perPage}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.comments.length === 0) {
+                    loadingMessage.innerHTML = '<span class="text-muted">You are up to date!</span>';
+                    loadingMessage.classList.add('fade-in');
+                    loading = false;
+                } else {
+                    data.comments.forEach(comment => {
+                        appendNewComment(commentList, comment);
+                    });
+                    page++;
+                }
+            })
+            .catch(error => console.error('Error loading comments:', error));
+    }
+
+    commentList.addEventListener('scroll', () => {
+        if (commentList.scrollTop + commentList.clientHeight >= commentList.scrollHeight) {
+            modalLoadComments(commentList);
+        }
+    });
+
+    // Initialize loading of comments
+    modalLoadComments(commentList);
+
+    const bootstrapModal = new bootstrap.Modal(modal);
+    bootstrapModal.show();
+}
 
 
 function new_post(event) {
