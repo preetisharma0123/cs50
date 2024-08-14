@@ -3,7 +3,7 @@
 <div class="container py-4">
     <div class="row">
         <div class="col-3 d-none d-md-block" id="left-container">
-            <div class="card overflow-hidden">
+            <div class="card overflow-hidden" id="sidenav">
                 <div class="card-body pt-3">
                     <ul class="nav nav-link-secondary flex-column fw-bold gap-2">
                         <li class="nav-item">
@@ -18,6 +18,24 @@
                 </div>
                 <div class="card-footer text-center py-2">
                     <a class="btn btn-link btn-sm" id='profile'>View Profile </a>
+                </div>
+            </div>
+            <div class="card text-center" id="profile" style="display: none;">
+                <div class="card-body py-5">
+                    <div class="d-flex justify-content-center mb-3">
+                        <img src="" alt="Profile Image" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
+                    </div>
+                    <h5 class="card-title mb-2">@username</h5>
+                    <div class="d-flex justify-content-around">
+                        <div>
+                            <h6 class="card-subtitle mb-2 text-muted">Followers</h6>
+                            <p class="card-text">1234</p>
+                        </div>
+                        <div>
+                            <h6 class="card-subtitle mb-2 text-muted">Following</h6>
+                            <p class="card-text">567</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

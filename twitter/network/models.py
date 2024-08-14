@@ -68,7 +68,7 @@ class Comment(models.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "post" : self.post,
+            "post" : self.post.serialize(),
             "text" : self.text,
             "created_by" : self.created_by.username, 
             "timestamp": self.timestamp.strftime("%Y-%m-%d %H:%M:%S")

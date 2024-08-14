@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from datetime import datetime   
 from django.views.decorators.csrf import csrf_exempt
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import json
 
 from .models import *
@@ -70,27 +71,21 @@ def all_posts(request,username = None):
     for post in posts:
         # Retrieve comments and likes associated with the post
         
-        comments = Comment.objects.filter(post=post)
         likes = Like.objects.filter(post=post)
 
         # Retrieve comments and likes count
-
-        total_comments = comments.count()
         total_likes = likes.count()
 
         # Serialize post
         serialized_post_current = post.serialize()
 
         # Add number of comments and likes to the serialized post data
-        serialized_post_current['total_comments'] = total_comments
         serialized_post_current['total_likes'] = total_likes
 
         user_has_liked =  Like.objects.filter(post=post, liked_by = request.user).exists()
-        
         serialized_post_current['likes'] = user_has_liked
 
         serialized_posts.append(serialized_post_current)
-
     # Return serialized data as JSON response
     return JsonResponse({'posts': serialized_posts})
 
@@ -189,16 +184,39 @@ def post_like(request, post_id):
 def post_comments(request, post_id):
 
     #TODO
-
     try:
         post = Posts.objects.get(pk=post_id)
-        comments = Comment.objects.filter(post=post)
-    except Comments.doesNotExist:
-        return JsonResponse({"error": "Comments not found."}, status=404)
+    except Posts.DoesNotExist:
+        return JsonResponse({"error": "Post not found."}, status=404)
 
     # Return post contents
     if request.method == "GET":
-        return JsonResponse(comments.serialize())
+        # Get pagination parameters from the request
+        page = request.GET.get('page', 1)
+        per_page = request.GET.get('per_page', 10)
+
+        # Get all comments for the post
+        comments = Comment.objects.filter(post=post).order_by('-timestamp')
+
+        # Paginate the comments
+        paginator = Paginator(comments, per_page)
+        try:
+            paginated_comments = paginator.page(page)
+        except PageNotAnInteger:
+            paginated_comments = paginator.page(1)
+        except EmptyPage:
+            paginated_comments = paginator.page(paginator.num_pages)
+
+        # Serialize the paginated comments
+        comments_data = [comment.serialize() for comment in paginated_comments]
+
+        # Return the paginated comments
+        return JsonResponse({
+            'comments': comments_data,
+            'page': paginated_comments.number,
+            'num_pages': paginator.num_pages,
+            'total_comments': paginator.count
+        })
 
     # Return post contents
     elif request.method == "PUT":
@@ -207,7 +225,7 @@ def post_comments(request, post_id):
         comment.save()
         post.save()
         print(comment)
-        return JsonResponse({"success": "true"})
+        return JsonResponse(comment.serialize())
     else:
         return JsonResponse({
             "error": "GET/PUT request required."
