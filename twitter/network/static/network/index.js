@@ -7,17 +7,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // By default, load all posts
     all_posts();
-
-    document.addEventListener('click', event => {
-        const element = event.target;
-
-        if (element.id === 'username' || element.id === 'profile') {
-            const username = element.textContent;
-            profile_page(username);
-            console.log(username);
-        }
-    });
-
     // Select the submit button and post content to be used later
     const create_post_button = document.querySelector('#create_post_button');
     const post_content = document.querySelector('#post_content');
@@ -29,7 +18,28 @@ document.addEventListener('DOMContentLoaded', function () {
     post_content.onkeyup = () => {
         create_post_button.disabled = post_content.value.length === 0;
     }
+    loadTrendingHashtags();
 });
+
+
+function loadTrendingHashtags() {
+    fetch('/trending_hashtags')
+        .then(response => response.json())
+        .then(data => {
+            const trendingHashtagsContainer = document.querySelector('#trending-hashtags');
+            trendingHashtagsContainer.innerHTML = ''; // Clear previous hashtags
+
+            data.trending_hashtags.forEach(hashtag => {
+                const hashtagElement = document.createElement('span');
+                hashtagElement.className = 'badge bg-primary me-1';
+                hashtagElement.textContent = `${hashtag.hashtag} (${hashtag.num_posts})`;
+                trendingHashtagsContainer.appendChild(hashtagElement);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching trending hashtags:', error);
+        });
+}
 
 function load_post(id) {
     fetch(`/all_posts/${id}`)
@@ -80,7 +90,6 @@ function all_posts(username) {
             console.error('Error fetching posts:', error);
         });
 }
-
 function createPostElement(post) {
     const newPostElement = document.createElement('div');
     const formattedTimestamp = formatPostDate(post.timestamp);
@@ -100,6 +109,7 @@ function createPostElement(post) {
             <div class="card-body">
                 <div>
                     <p class="fs-6 fw-light text-muted">${post.content}</p>
+                    <div id="hashtags" class="mb-2"></div> <!-- Hashtags will be added here -->
                     <div class="d-flex justify-content-between">
                         <div>
                             <span id="like-image"></span>
@@ -138,9 +148,78 @@ function createPostElement(post) {
 
     newPostElement.querySelector('.card-body').appendChild(expandButton);
 
+    // Add hashtags to the post
+    const hashtagsContainer = newPostElement.querySelector('#hashtags');
+    post.hashtags.forEach(hashtag => {
+        const hashtagElement = document.createElement('span');
+        hashtagElement.className = 'badge bg-primary me-1';
+        hashtagElement.innerText = `${hashtag}`;
+        hashtagsContainer.appendChild(hashtagElement);
+    });
 
     return newPostElement;
 }
+
+// function createPostElement(post) {
+//     const newPostElement = document.createElement('div');
+//     const formattedTimestamp = formatPostDate(post.timestamp);
+//     newPostElement.innerHTML = `
+//         <div class="card">
+//             <div class="px-3 pt-4 pb-2">
+//                 <div class="d-flex align-items-center justify-content-between">
+//                     <div class="d-flex align-items-center">
+//                         <img style="width:50px" class="me-2 avatar-sm rounded-circle"
+//                             src="https://api.dicebear.com/6.x/fun-emoji/svg?seed=Mario" alt="Avatar">
+//                         <div>
+//                             <h5 class="card-title mb-0"><a href="#">${post.created_by}</a></h5>
+//                         </div>
+//                     </div>
+//                 </div>
+//             </div>
+//             <div class="card-body">
+//                 <div>
+//                     <p class="fs-6 fw-light text-muted">${post.content}</p>
+//                     <div class="d-flex justify-content-between">
+//                         <div>
+//                             <span id="like-image"></span>
+//                             <span id="likes">${post.total_likes || "0"}</span>
+//                             <span id="comments-image" class="fa-solid fa-message"></span>
+//                             <span id="comments">${post.total_comments || "0"}</span>
+//                         </div>
+//                         <div>
+//                             <span class="fs-6 fw-light text-muted">
+//                                 <span class="fas fa-clock"></span> ${formattedTimestamp}
+//                             </span>
+//                         </div>
+//                     </div>
+//                 </div>
+//                 <div id="comment_section"></div>
+//                 <div id="comment_list"></div>
+//             </div>
+//         </div>
+//     `;
+
+//     const buttonLike = createLikeButton(post, newPostElement);
+//     newPostElement.querySelector('#like-image').appendChild(buttonLike);
+
+//     const commentSection = createCommentSection(post, newPostElement);
+//     newPostElement.querySelector('#comment_section').appendChild(commentSection.comment_content);
+//     newPostElement.querySelector('#comment_section').appendChild(commentSection.create_comment_button);
+
+//     loadComments(post.id, newPostElement.querySelector('#comment_list'), 1, 3);
+
+//     const expandButton = document.createElement('button');
+//     expandButton.innerHTML = "Expand";
+//     expandButton.className = "btn btn-secondary btn-sm my-2";
+//     expandButton.addEventListener('click', () => {
+//         openPostModal(post);
+//     });
+
+//     newPostElement.querySelector('.card-body').appendChild(expandButton);
+
+
+//     return newPostElement;
+// }
 
 function createLikeButton(post, newPostElement) {
     const buttonLike = document.createElement('button');
@@ -400,9 +479,8 @@ function formatPostDate(dateString) {
     return new Date(dateString).toLocaleDateString(undefined, options);
 }
 
-function profile_page(username) {
-    const sidenav = document.getElementById('sidenav'); 
-    sidenav.style.display = "none";
-    const profile = document.getElementById('profile'); 
-    profile.style.display = "block";
+function profile_page() {
+    const profile = document.querySelector("#profile")
+    console.log(profile.attributes['username'])
+    all_posts("tbabbar")
 }

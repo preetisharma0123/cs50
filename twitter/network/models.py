@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
+from django.db.models import Count
+from datetime import timedelta
 
 
 class User(AbstractUser):
@@ -14,27 +16,25 @@ class User(AbstractUser):
 
 
 class Posts(models.Model):
-    # create post model
-    content = models.CharField(max_length=64, blank = False, unique = True)
+    # Existing fields...
+    content = models.CharField(max_length=64, blank=False, unique=True)
     timestamp = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User,on_delete=models.CASCADE, blank = False, related_name="user_posts")
-    
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, related_name="user_posts")
 
     def serialize(self):
         return {
             "id": self.id,
-            "content" : self.content,
-            "timestamp" : self.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
-            "created_by" : self.created_by.username, 
+            "content": self.content,
+            "timestamp": self.timestamp.strftime("%Y-%m-%d %H:%M:%S"),
+            "created_by": self.created_by.username,
+            "hashtags": [hashtag.name for hashtag in self.hashtags.all()],
         }
 
     def __str__(self):
         return f"{self.created_by} at {self.timestamp} wrote {self.content}"
 
     def is_valid_post(self):
-        return self.content.length>0 and self.timestamp>= datetime.now() 
-
-
+        return len(self.content) > 0 and self.timestamp >= datetime.now()
 
 class Following(models.Model):
     #users the user is following 
@@ -96,3 +96,17 @@ class Like(models.Model):
 
 
   
+class Hashtag(models.Model):
+    name = models.CharField(max_length=64, unique=True)
+    posts = models.ManyToManyField('Posts', related_name='hashtags')
+
+    def __str__(self):
+        return f"#{self.name}"
+
+    @staticmethod
+    def get_trending_hashtags():
+        one_hour_ago = timezone.now() - timedelta(hours=1)
+        hashtags = Hashtag.objects.filter(posts__timestamp__gte=one_hour_ago) \
+            .annotate(num_posts=Count('posts')) \
+            .order_by('-num_posts')
+        return hashtags[:10]  # Return top 10 trending hashtags

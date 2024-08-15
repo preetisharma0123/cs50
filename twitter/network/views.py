@@ -7,8 +7,11 @@ from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import json
+import re
 
 from .models import *
+from django.shortcuts import get_object_or_404
+from .models import User
 
 
 def index(request):
@@ -23,44 +26,55 @@ def index(request):
 @csrf_exempt
 @login_required
 def new_post(request):
-    #add new post
-
-    # Composing a new post must be via POST
+    # add new post
     if request.method != "POST":
-        return JsonResponse({"error": "POST request required."}, status=400)    
+        return JsonResponse({"error": "POST request required."}, status=400)
 
-    data = json.loads(request.body)    
-    
+    data = json.loads(request.body)
+
     if 'content' not in data:
-            return JsonResponse({"error": "Missing 'content' key in the request data."}, status=400)
+        return JsonResponse({"error": "Missing 'content' key in the request data."}, status=400)
 
-    try:        
+    try:
         post_content = data.get("content").capitalize()
         user = request.user
-        post = Posts(created_by= user, content = post_content)
+        post = Posts(created_by=user, content=post_content)
         post.save()
+
+        # Extract and save hashtags
+        hashtags = extract_hashtags(post_content)
+        for hashtag in hashtags:
+            cleaned_hashtag = clean_hashtag(hashtag)
+            hashtag_obj, created = Hashtag.objects.get_or_create(name=cleaned_hashtag)
+            hashtag_obj.posts.add(post)
+
         return JsonResponse({"message": "Post submitted successfully."}, status=201)
     except json.JSONDecodeError as e:
         print(e)  # Log the actual error for debugging purposes
-        return JsonResponse({"error": "Post not found."},status=500)
+        return JsonResponse({"error": "Post not found."}, status=500)
+
+def extract_hashtags(content):
+    # Extracts hashtags from the content
+    return re.findall(r'#\S+', content)
+
+def clean_hashtag(hashtag):
+    # Cleans the hashtag by removing special characters except for hash
+    return re.sub(r'[^a-zA-Z0-9#]', '', hashtag).lower()
 
         
 @csrf_exempt
 @login_required
-def all_posts(request,username = None):
+def all_posts(request, username=None):
     #All posts
-    print("Received username:", username) 
-
-    if username:
-        user = User.objects.get(username=username)
-        print("user in all posts:", user)
-        print("username in all posts:", username)
-        posts = Posts.objects.filter(created_by = user)
-
-
-    else:    
+    if username == "following":
+        following_instance = Following.objects.filter(user_followed_by=request.user).all()
+        following_users = following_instance.user_follow.all()
+        posts = Posts.objects.filter(created_by__in=following_users)
+    elif username:
+        user = get_object_or_404(User, username=username)
+        posts = Posts.objects.filter(created_by=user)
+    else:
         posts = Posts.objects.all()
-        print("username in all posts:", username)
         print("running all posts without username:", username)
 
     # Return posts in reverse chronologial order
@@ -317,3 +331,41 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+@csrf_exempt
+@login_required
+def trending_hashtags(request):
+    if request.method != 'GET':
+        return JsonResponse({"error": "GET request required."}, status=400)
+
+    hashtags = Hashtag.get_trending_hashtags()
+    trending_data = [{"hashtag": hashtag.name, "num_posts": hashtag.num_posts} for hashtag in hashtags]
+
+    return JsonResponse({"trending_hashtags": trending_data}, status=200)
+
+
+@login_required
+@csrf_exempt
+def follow_user(request, username):
+    if request.method != 'POST':
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+    try:
+        user_to_follow = get_object_or_404(User, username=username)
+        current_user = request.user
+
+        # Get or create the following instance for the current user
+        following_instance, created = Following.objects.get_or_create(user_followed_by=current_user)
+
+        # Check if the current user is already following the user
+        if user_to_follow in following_instance.user_follow.all():
+            return JsonResponse({"message": f"You are already following {username}."}, status=400)
+
+        # Add user to the following list
+        following_instance.user_follow.add(user_to_follow)
+        following_instance.save()
+
+        return JsonResponse({"message": f"You are now following {username}."}, status=200)
+
+    except User.DoesNotExist:
+        return JsonResponse({"error": "User not found."}, status=404)

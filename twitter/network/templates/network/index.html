@@ -7,17 +7,17 @@
                 <div class="card-body pt-3">
                     <ul class="nav nav-link-secondary flex-column fw-bold gap-2">
                         <li class="nav-item">
-                            <a class="nav-link" id="all_posts" href="{% url 'index' %}">All Posts</a>
+                            <a class="nav-link" id="all_posts" href="{% url 'all_posts' %}">All Posts</a>
                         </li>
                         {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link" id="following">Following</a>
+                            <a class="nav-link" id="following_posts" href="{% url 'all_posts_with_username' 'following' %}">Following</a>
                         </li>
                         {% endif %}
                     </ul>
                 </div>
                 <div class="card-footer text-center py-2">
-                    <a class="btn btn-link btn-sm" id='profile'>View Profile </a>
+                    <a class="btn btn-link btn-sm" id='profile' username="{{ user.username }}">View Profile </a>
                 </div>
             </div>
             <div class="card text-center" id="profile" style="display: none;">
@@ -43,7 +43,7 @@
             <form id="create_post_form">
                 {% csrf_token %}
                 <div id="alert"></div>
-                <h4> Share yours ideas </h4>
+                <h4> Share your ideas </h4>
                 <div class="row">
                     <div class="mb-3">
                         <textarea id="post_content" rows="3" class="form-control" rows="3"></textarea>
@@ -54,6 +54,14 @@
                 </div>
             </form>
             <div class="mt-3" id="all-posts-view"></div>
+        </div>
+        <div class="col-3 d-none d-lg-block" id="right-container">
+            <div class="card overflow-hidden">
+                <div class="card-body">
+                    <h5 class="card-title">Trending Hashtags</h5>
+                    <div id="trending-hashtags"></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
