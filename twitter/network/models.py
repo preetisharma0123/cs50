@@ -15,6 +15,15 @@ class User(AbstractUser):
     #   return "{}".format(self.email)
 
 
+class Following(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="follow_instance")
+    following = models.ManyToManyField(User, blank=True, related_name="followers")
+
+    def __str__(self):
+        return f"{self.user.username} is following {self.following.count()} users"
+
+
+
 class Posts(models.Model):
     # Existing fields...
     content = models.CharField(max_length=64, blank=False, unique=True)
@@ -35,21 +44,6 @@ class Posts(models.Model):
 
     def is_valid_post(self):
         return len(self.content) > 0 and self.timestamp >= datetime.now()
-
-class Following(models.Model):
-    #users the user is following 
-    user_follow = models.ManyToManyField(User, blank = True, related_name="following")
-    #users the user is followed by 
-    user_followed_by = models.ManyToManyField(User,blank = True, related_name="followers")
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "user_follow" : self.user_follow.username, 
-            "user_followed_by" : self.user_followed_by.username, 
-            
-        }
-
 
 class Comment(models.Model):
      # create comment model

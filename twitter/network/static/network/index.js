@@ -3,10 +3,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // Use buttons to toggle between views
     document.querySelector('#all_posts').addEventListener('click', all_posts);
     document.querySelector('#following').addEventListener('click', following);
-    document.querySelector('#profile').addEventListener('click', profile_page);
+    document.querySelector('#view-profile').addEventListener('click', profile_page);
+    document.querySelector('#my-feed').addEventListener('click', profile_page);
 
     // By default, load all posts
-    all_posts();
+    // all_posts('following');
+    all_posts()
     // Select the submit button and post content to be used later
     const create_post_button = document.querySelector('#create_post_button');
     const post_content = document.querySelector('#post_content');
@@ -19,8 +21,166 @@ document.addEventListener('DOMContentLoaded', function () {
         create_post_button.disabled = post_content.value.length === 0;
     }
     loadTrendingHashtags();
+    load_profile();
 });
 
+function load_profile(username) {
+    logged_in_user = document.querySelector("#view-profile").attributes['username'].nodeValue;
+    if (!username) {
+        username = logged_in_user;
+    }
+    fetch(`/profile_page/${username}`)
+        .then(response => response.json())
+        .then(profile => {
+            console.log(profile);
+            const element = document.querySelector('#profile-container');
+            const isFollowing = profile.is_following ? 'Unfollow' : 'Follow';
+            const followButtonHtml = `
+                <button class="btn btn-primary" id="follow-btn" data-username="${username}">
+                    <i class="fa ${profile.is_following ? 'fa-solid fa-user-minus' : 'fa-solid fa-user-plus'}"></i> ${isFollowing}
+                </button>
+            `;
+            element.innerHTML = `
+                <div class="card-body py-5">
+                    <div class="d-flex justify-content-center mb-3">
+                        <img src="https://api.dicebear.com/6.x/fun-emoji/svg" alt="Profile Image" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
+                    </div>
+                    <h5 class="card-title mb-2">@${profile.username}</h5>
+                    <div class="d-flex justify-content-around">
+                        <div>
+                            <h6 class="card-subtitle mb-2 text-muted">Followers</h6>
+                            <p class="card-text">${profile.followers}</p>
+                        </div>
+                        <div>
+                            <h6 class="card-subtitle mb-2 text-muted">Following</h6>
+                            <p class="card-text">${profile.following}</p>
+                        </div>
+                    </div>
+                    ${logged_in_user !== profile.username ? followButtonHtml : ''}
+                </div>
+            `;
+
+            // Add event listener to follow/unfollow button
+            const followButton = document.querySelector('#follow-btn');
+            if (followButton) {
+                followButton.addEventListener('click', () => {
+                    const action = profile.is_following ? 'unfollow' : 'follow';
+                    fetch(`/follow/${action}/${username}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken') // Assuming you have a function to get the CSRF token
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            load_profile(username); // Reload profile to update button state
+                        } else {
+                            console.error('Error:', data.error);
+                        }
+                    });
+                });
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Check if this cookie's name matches the one we're looking for
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+
+// function load_profile(username) {
+//     const loggedInUser = document.querySelector("#view-profile").attributes['username'].nodeValue;
+//     if (!username) {
+//         username = loggedInUser;
+//     }
+    
+//     fetch(`/profile_page/${username}`)
+//         .then(response => response.json())
+//         .then(profile => {
+//             console.log(profile);
+//             const element = document.querySelector('#profile-container');
+            
+//             // Determine the follow button's icon based on the `is_following` value
+//             let followButtonIcon = profile.is_following ? 
+//                 '<i class="fas fa-user-check"></i>' : 
+//                 '<i class="far fa-user-plus"></i>';
+            
+//             // Only show the follow button if the profile is not the logged-in user
+//             const followButton = (username !== loggedInUser) ? 
+//                 `<button class="btn btn-outline-primary mt-3" id="follow-button" data-username="${username}">
+//                     ${followButtonIcon} Follow
+//                 </button>` 
+//                 : '';
+
+//             element.innerHTML = `
+//                 <div class="card-body py-5">
+//                     <div class="d-flex justify-content-center mb-3">
+//                         <img src="https://api.dicebear.com/6.x/fun-emoji/svg" alt="Profile Image" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
+//                     </div>
+//                     <h5 class="card-title mb-2">@${profile.username}</h5>
+//                     <div class="d-flex justify-content-around">
+//                         <div>
+//                             <h6 class="card-subtitle mb-2 text-muted">Followers</h6>
+//                             <p class="card-text">${profile.followers}</p>
+//                         </div>
+//                         <div>
+//                             <h6 class="card-subtitle mb-2 text-muted">Following</h6>
+//                             <p class="card-text">${profile.following}</p>
+//                         </div>
+//                     </div>
+//                     ${followButton}
+//                 </div>
+//             `;
+
+//             // Add event listener to the follow button
+//             const followButtonElement = document.querySelector('#follow-button');
+//             if (followButtonElement) {
+//                 followButtonElement.addEventListener('click', () => {
+//                     // Perform follow/unfollow action
+//                     followUser(username);
+//                 });
+//             }
+//         });
+// }
+
+function followUser(username) {
+    fetch(`/follow/${username}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()  // Add CSRF token if needed
+        },
+        body: JSON.stringify({})  // You may send additional data if needed
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            // Reload the profile to update the follow status
+            load_profile(username);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function getCsrfToken() {
+    const cookieValue = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)')?.pop() || '';
+    return cookieValue;
+}
 
 function loadTrendingHashtags() {
     fetch('/trending_hashtags')
@@ -69,6 +229,7 @@ function all_posts(username) {
     const all_post_view = document.querySelector('#all-posts-view');
     let url = '/all_posts';
     if (username) {
+        console.log(username)
         url = `/all_posts/${username}`;
     }
 
@@ -90,9 +251,11 @@ function all_posts(username) {
             console.error('Error fetching posts:', error);
         });
 }
+
 function createPostElement(post) {
     const newPostElement = document.createElement('div');
     const formattedTimestamp = formatPostDate(post.timestamp);
+    
     newPostElement.innerHTML = `
         <div class="card">
             <div class="px-3 pt-4 pb-2">
@@ -101,7 +264,9 @@ function createPostElement(post) {
                         <img style="width:50px" class="me-2 avatar-sm rounded-circle"
                             src="https://api.dicebear.com/6.x/fun-emoji/svg?seed=Mario" alt="Avatar">
                         <div>
-                            <h5 class="card-title mb-0"><a href="#">${post.created_by}</a></h5>
+                            <h5 class="card-title mb-0">
+                                <a href="#" class="post-creator" data-username="${post.created_by}">${post.created_by}</a>
+                            </h5>
                         </div>
                     </div>
                 </div>
@@ -157,8 +322,19 @@ function createPostElement(post) {
         hashtagsContainer.appendChild(hashtagElement);
     });
 
+    // Add click event to the post creator's name
+    const postCreatorElement = newPostElement.querySelector('.post-creator');
+    postCreatorElement.addEventListener('click', (event) => {
+        event.preventDefault();
+        const username = postCreatorElement.getAttribute('data-username');
+        load_profile(username);
+        // Optionally, if you want to show the posts of the clicked user
+        all_posts(username);
+    });
+
     return newPostElement;
 }
+
 
 // function createPostElement(post) {
 //     const newPostElement = document.createElement('div');
@@ -480,7 +656,8 @@ function formatPostDate(dateString) {
 }
 
 function profile_page() {
-    const profile = document.querySelector("#profile")
-    console.log(profile.attributes['username'])
-    all_posts("tbabbar")
+    const profile = document.querySelector("#view-profile")
+    username = profile.attributes['username'].nodeValue
+    load_profile(username)
+    all_posts(username)
 }

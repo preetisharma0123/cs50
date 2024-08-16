@@ -65,26 +65,36 @@ def clean_hashtag(hashtag):
 @csrf_exempt
 @login_required
 def all_posts(request, username=None):
-    #All posts
-    if username == "following":
-        following_instance = Following.objects.filter(user_followed_by=request.user).all()
-        following_users = following_instance.user_follow.all()
-        posts = Posts.objects.filter(created_by__in=following_users)
-    elif username:
-        user = get_object_or_404(User, username=username)
-        posts = Posts.objects.filter(created_by=user)
+    print("Received username:", username) 
+
+    if username:
+        if username != 'following':
+            user = User.objects.get(username=username)
+            print("user in all posts:", user)
+            print("username in all posts:", username)
+            posts = Posts.objects.filter(created_by=user)
+        else:
+            # Get the Following instance for the current user
+            following_instance = Following.objects.filter(user=request.user).first()
+            if following_instance:
+                # Get the users the current user is following
+                following_users = following_instance.following.all()
+                # Get posts from the users the current user is following
+                posts = Posts.objects.filter(created_by__in=following_users)
+            else:
+                # If the user is not following anyone, return an empty queryset
+                posts = Posts.objects.none()
     else:
         posts = Posts.objects.all()
         print("running all posts without username:", username)
 
-    # Return posts in reverse chronologial order
+    # Return posts in reverse chronological order
     posts = posts.order_by("-timestamp").all()
 
     serialized_posts = []
 
     for post in posts:
         # Retrieve comments and likes associated with the post
-        
         likes = Like.objects.filter(post=post)
         comments = Comment.objects.filter(post=post)
 
@@ -99,12 +109,14 @@ def all_posts(request, username=None):
         serialized_post_current['total_likes'] = total_likes
         serialized_post_current['total_comments'] = total_comments
 
-        user_has_liked =  Like.objects.filter(post=post, liked_by = request.user).exists()
+        user_has_liked = Like.objects.filter(post=post, liked_by=request.user).exists()
         serialized_post_current['likes'] = user_has_liked
 
         serialized_posts.append(serialized_post_current)
+
     # Return serialized data as JSON response
     return JsonResponse({'posts': serialized_posts})
+
 
 
 @csrf_exempt
@@ -277,23 +289,26 @@ def profile_page(request,username):
     print("Received username:", username) 
     try:
         user = User.objects.get(username=username)
-        following = user.following.count()
-        followers = user.followers.count()
+        is_following = None
 
-        print("user in profile page:", user)
-        print("username in profile page:", username)
+        # Check if the logged-in user is viewing their own profile
+        if user.id != request.user.id:
+            # Check if the logged-in user is following the requested profile
+            is_following = user in Following.objects.filter(user__id = request.user.id).first().following.all()
 
-    
+        following_count = Following.objects.filter(user__id = user.id).count()  # Number of people this user is following
+        followers_count = user.followers.count()  # Number of people following this user
 
      # Create a dictionary with user data
         user_data = {
-            'username': user.username.capitalize(),
+            'username': user.username,
             'email': user.email,
-            'following': following,
-            'followers': followers,
+            'following': following_count,
+            'followers': followers_count,
+            'is_following': is_following,
         }
 
-        return JsonResponse({'user': user_data})
+        return JsonResponse(user_data)
         
     except User.DoesNotExist:
         return JsonResponse({'error': 'User not found'}, status=404)
@@ -343,29 +358,23 @@ def trending_hashtags(request):
 
     return JsonResponse({"trending_hashtags": trending_data}, status=200)
 
-
 @login_required
-@csrf_exempt
-def follow_user(request, username):
+def follow_user(request, action, username):
     if request.method != 'POST':
         return JsonResponse({"error": "POST request required."}, status=400)
-
-    try:
-        user_to_follow = get_object_or_404(User, username=username)
-        current_user = request.user
-
-        # Get or create the following instance for the current user
-        following_instance, created = Following.objects.get_or_create(user_followed_by=current_user)
-
-        # Check if the current user is already following the user
-        if user_to_follow in following_instance.user_follow.all():
-            return JsonResponse({"message": f"You are already following {username}."}, status=400)
-
-        # Add user to the following list
-        following_instance.user_follow.add(user_to_follow)
-        following_instance.save()
-
-        return JsonResponse({"message": f"You are now following {username}."}, status=200)
-
-    except User.DoesNotExist:
-        return JsonResponse({"error": "User not found."}, status=404)
+    
+    user_to_follow = get_object_or_404(User, username=username)
+    current_user = request.user
+    
+    if action == 'follow':
+        if user_to_follow in Following.objects.filter(user__id = request.user.id).first().following.all():
+            return JsonResponse({"error": "Already following this user."}, status=400)
+        current_user.following.add(user_to_follow)
+    elif action == 'unfollow':
+        if user_to_follow not in Following.objects.filter(user__id = request.user.id).first().following.all():
+            return JsonResponse({"error": "Not following this user."}, status=400)
+        current_user.following.remove(user_to_follow)
+    else:
+        return JsonResponse({"error": "Invalid action."}, status=400)
+    
+    return JsonResponse({"success": True}, status=200)

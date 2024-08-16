@@ -3,40 +3,19 @@
 <div class="container py-4">
     <div class="row">
         <div class="col-3 d-none d-md-block" id="left-container">
-            <div class="card overflow-hidden" id="sidenav">
-                <div class="card-body pt-3">
-                    <ul class="nav nav-link-secondary flex-column fw-bold gap-2">
-                        <li class="nav-item">
-                            <a class="nav-link" id="all_posts" href="{% url 'all_posts' %}">All Posts</a>
-                        </li>
-                        {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" id="following_posts" href="{% url 'all_posts_with_username' 'following' %}">Following</a>
-                        </li>
-                        {% endif %}
-                    </ul>
-                </div>
-                <div class="card-footer text-center py-2">
-                    <a class="btn btn-link btn-sm" id='profile' username="{{ user.username }}">View Profile </a>
-                </div>
-            </div>
-            <div class="card text-center" id="profile" style="display: none;">
-                <div class="card-body py-5">
-                    <div class="d-flex justify-content-center mb-3">
-                        <img src="" alt="Profile Image" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
+            <div class="card text-center" style="display: block;">
+                    <div id="profile-container" >
                     </div>
-                    <h5 class="card-title mb-2">@username</h5>
-                    <div class="d-flex justify-content-around">
-                        <div>
-                            <h6 class="card-subtitle mb-2 text-muted">Followers</h6>
-                            <p class="card-text">1234</p>
-                        </div>
-                        <div>
-                            <h6 class="card-subtitle mb-2 text-muted">Following</h6>
-                            <p class="card-text">567</p>
+                    <div class="card-footer text-center py-2">
+                        <div class="row">
+                            <div class="col-6 border-end">
+                                <a class="btn btn-link btn-sm w-100" id='my-feed' username="following">My Feed</a>
+                            </div>
+                            <div class="col-6">
+                                <a class="btn btn-link btn-sm w-100" id='view-profile' username="{{ user.username }}">My Profile</a>
+                            </div>
                         </div>
                     </div>
-                </div>
             </div>
         </div>
         <div class="col-lg-6 col-sm-12 col-md-8" id="main-container">

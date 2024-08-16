@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import AbstractUser, Posts, Following, Comment, Like, User
+from .models import AbstractUser, Posts, Comment, Like, User, Following
 
 # Register your models here.
 admin.site.register(User)

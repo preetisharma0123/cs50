@@ -16,5 +16,6 @@ urlpatterns = [
     path("all_posts/<int:post_id>/like", views.post_like, name="comments"),
     path("profile_page/<str:username>", views.profile_page, name="profile_page"),
     path('trending_hashtags', views.trending_hashtags, name='trending_hashtags'),
-    path('follow/<str:username>/', views.follow_user, name='follow_user'),
+    path('follow/<str:action>/<str:username>/', views.follow_user, name='follow_user'),
+
 ]
