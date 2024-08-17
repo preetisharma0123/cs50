@@ -13,6 +13,10 @@ from .models import *
 from django.shortcuts import get_object_or_404
 from .models import User
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def index(request):
     # Authenticated users view their inbox
@@ -365,15 +369,15 @@ def follow_user(request, action, username):
     
     user_to_follow = get_object_or_404(User, username=username)
     current_user = request.user
-    
+    following = Following.objects.filter(user__id = request.user.id).first().following
     if action == 'follow':
-        if user_to_follow in Following.objects.filter(user__id = request.user.id).first().following.all():
+        if user_to_follow in following.all():
             return JsonResponse({"error": "Already following this user."}, status=400)
-        current_user.following.add(user_to_follow)
+        following.add(user_to_follow)
     elif action == 'unfollow':
-        if user_to_follow not in Following.objects.filter(user__id = request.user.id).first().following.all():
+        if user_to_follow not in following.all():
             return JsonResponse({"error": "Not following this user."}, status=400)
-        current_user.following.remove(user_to_follow)
+        following.remove(user_to_follow)
     else:
         return JsonResponse({"error": "Invalid action."}, status=400)
     
