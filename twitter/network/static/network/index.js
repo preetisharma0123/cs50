@@ -2,13 +2,14 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Use buttons to toggle between views
     document.querySelector('#all_posts').addEventListener('click', all_posts);
-    document.querySelector('#following').addEventListener('click', following);
     document.querySelector('#view-profile').addEventListener('click', profile_page);
-    document.querySelector('#my-feed').addEventListener('click', profile_page);
+    document.querySelector('#my-feed').addEventListener('click', following);
 
     // By default, load all posts
     // all_posts('following');
-    all_posts()
+    const profile = document.querySelector("#view-profile")
+    username = profile.attributes['username'].nodeValue
+    all_posts('following')
     // Select the submit button and post content to be used later
     const create_post_button = document.querySelector('#create_post_button');
     const post_content = document.querySelector('#post_content');
@@ -191,8 +192,11 @@ function loadTrendingHashtags() {
 
             data.trending_hashtags.forEach(hashtag => {
                 const hashtagElement = document.createElement('span');
-                hashtagElement.className = 'badge bg-primary me-1';
+                hashtagElement.id = "hashtag"
+                hashtagElement.className = 'badge bg-secondary buttonLike';
                 hashtagElement.textContent = `${hashtag.hashtag} (${hashtag.num_posts})`;
+                hashtagElement.setAttribute('tag', hashtag.hashtag.replace("#", ''));
+                hashtagElement.addEventListener('click', hashtag_posts)
                 trendingHashtagsContainer.appendChild(hashtagElement);
             });
         })
@@ -232,6 +236,32 @@ function all_posts(username) {
         console.log(username)
         url = `/all_posts/${username}`;
     }
+
+    fetch(url)
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(postsData => {
+            all_post_view.innerHTML = ''; // Clear previous posts
+            console.log(postsData);
+            postsData.posts.forEach(post => {
+                const newPostElement = createPostElement(post);
+                all_post_view.appendChild(newPostElement);
+                all_post_view.appendChild(document.createElement('hr'));
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching posts:', error);
+        });
+}
+
+function all_posts_hashtag(hashtag) {
+    document.querySelector('#all-posts-view').style.display = 'block';
+    document.querySelector('#create_post_form').addEventListener('submit', new_post);
+
+    const all_post_view = document.querySelector('#all-posts-view');
+    let url = `/all_posts_hashtag/${hashtag}`;
 
     fetch(url)
         .then(response => {
@@ -641,9 +671,9 @@ function new_post(event) {
     .then(result => {
         console.log(result);
         newPost.value = '';
-        submit.disabled = true;
         console.log("all posts called");
         all_posts();
+        loadTrendingHashtags();
     })
     .catch(error => {
         console.error('There has been a problem with your fetch operation:', error);
@@ -655,9 +685,20 @@ function formatPostDate(dateString) {
     return new Date(dateString).toLocaleDateString(undefined, options);
 }
 
+function following() {
+    const profile = document.querySelector("#view-profile")
+    username = profile.attributes['username'].nodeValue
+    load_profile(username)
+    all_posts('following')
+}
+
 function profile_page() {
     const profile = document.querySelector("#view-profile")
     username = profile.attributes['username'].nodeValue
     load_profile(username)
     all_posts(username)
+}
+
+function hashtag_posts(element) {
+    all_posts_hashtag(element.originalTarget.attributes['tag'].nodeValue)
 }

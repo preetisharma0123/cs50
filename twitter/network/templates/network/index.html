@@ -41,6 +41,16 @@
                     <div id="trending-hashtags"></div>
                 </div>
             </div>
+            <div class="card mt-4">
+                    <div class="card-header">
+                        <h5>Popular Users</h5>
+                    </div>
+                    <div class="card-body">
+                            {% for user in popular_users %}
+                                <a href="#" onclick="load_profile('{{ user.username }}')">@{{ user.username }} ({{ user.num_followers }})</a>
+                            {% endfor %}
+                    </div>
+                </div>
         </div>
     </div>
 </div>

@@ -14,6 +14,11 @@ class User(AbstractUser):
     # def __str__(self):
     #   return "{}".format(self.email)
 
+    @staticmethod
+    def get_most_popular_users(limit=10):
+        return User.objects.annotate(num_followers=Count('followers')).order_by('-num_followers')[:limit]
+
+
 
 class Following(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="follow_instance")
@@ -26,7 +31,7 @@ class Following(models.Model):
 
 class Posts(models.Model):
     # Existing fields...
-    content = models.CharField(max_length=64, blank=False, unique=True)
+    content = models.CharField(max_length=1024, blank=False)
     timestamp = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, related_name="user_posts")
 
@@ -95,7 +100,7 @@ class Hashtag(models.Model):
     posts = models.ManyToManyField('Posts', related_name='hashtags')
 
     def __str__(self):
-        return f"#{self.name}"
+        return f"{self.name}"
 
     @staticmethod
     def get_trending_hashtags():

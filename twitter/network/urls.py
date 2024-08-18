@@ -17,5 +17,5 @@ urlpatterns = [
     path("profile_page/<str:username>", views.profile_page, name="profile_page"),
     path('trending_hashtags', views.trending_hashtags, name='trending_hashtags'),
     path('follow/<str:action>/<str:username>/', views.follow_user, name='follow_user'),
-
+    path('all_posts_hashtag/<str:hashtag>/', views.all_posts_hashtag, name='random'),
 ]

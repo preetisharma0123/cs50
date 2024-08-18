@@ -21,7 +21,11 @@ logger = logging.getLogger(__name__)
 def index(request):
     # Authenticated users view their inbox
     if request.user.is_authenticated:
-        return render(request, "network/index.html")
+        popular_users = User.get_most_popular_users()
+
+        return render(request, 'network/index.html', {
+            'popular_users': popular_users,
+        })
 
     # Everyone else is prompted to sign in
     else:
@@ -49,6 +53,7 @@ def new_post(request):
         hashtags = extract_hashtags(post_content)
         for hashtag in hashtags:
             cleaned_hashtag = clean_hashtag(hashtag)
+            cleaned_hashtag = cleaned_hashtag.replace('#', '')
             hashtag_obj, created = Hashtag.objects.get_or_create(name=cleaned_hashtag)
             hashtag_obj.posts.add(post)
 
@@ -69,20 +74,24 @@ def clean_hashtag(hashtag):
 @csrf_exempt
 @login_required
 def all_posts(request, username=None):
-    print("Received username:", username) 
+    import sys
+    print(username, file=sys.stderr)
 
     if username:
         if username != 'following':
             user = User.objects.get(username=username)
-            print("user in all posts:", user)
-            print("username in all posts:", username)
             posts = Posts.objects.filter(created_by=user)
         else:
             # Get the Following instance for the current user
             following_instance = Following.objects.filter(user=request.user).first()
+            if not following_instance:
+                following_instance = Following(user=request.user)
+                following_instance.save()
+            print(following_instance, file=sys.stderr)
             if following_instance:
                 # Get the users the current user is following
                 following_users = following_instance.following.all()
+                logger.info(following_users)
                 # Get posts from the users the current user is following
                 posts = Posts.objects.filter(created_by__in=following_users)
             else:
@@ -90,10 +99,44 @@ def all_posts(request, username=None):
                 posts = Posts.objects.none()
     else:
         posts = Posts.objects.all()
-        print("running all posts without username:", username)
 
     # Return posts in reverse chronological order
     posts = posts.order_by("-timestamp").all()
+
+    serialized_posts = []
+
+    for post in posts:
+        # Retrieve comments and likes associated with the post
+        likes = Like.objects.filter(post=post)
+        comments = Comment.objects.filter(post=post)
+
+        # Retrieve comments and likes count
+        total_likes = likes.count()
+        total_comments = comments.count()
+
+        # Serialize post
+        serialized_post_current = post.serialize()
+
+        # Add number of comments and likes to the serialized post data
+        serialized_post_current['total_likes'] = total_likes
+        serialized_post_current['total_comments'] = total_comments
+
+        user_has_liked = Like.objects.filter(post=post, liked_by=request.user).exists()
+        serialized_post_current['likes'] = user_has_liked
+
+        serialized_posts.append(serialized_post_current)
+
+    # Return serialized data as JSON response
+    return JsonResponse({'posts': serialized_posts})
+
+@csrf_exempt
+@login_required
+def all_posts_hashtag(request, hashtag=None):
+    import sys
+    print(Hashtag.objects.all(), file=sys.stderr)
+    hashtag = get_object_or_404(Hashtag, name=hashtag)
+    # Return posts in reverse chronological order
+    posts = hashtag.posts.order_by("-timestamp").all()
 
     serialized_posts = []
 
@@ -290,7 +333,6 @@ def login_view(request):
 def profile_page(request,username):
     #Display profile page of the user
 
-    print("Received username:", username) 
     try:
         user = User.objects.get(username=username)
         is_following = None
@@ -300,7 +342,12 @@ def profile_page(request,username):
             # Check if the logged-in user is following the requested profile
             is_following = user in Following.objects.filter(user__id = request.user.id).first().following.all()
 
-        following_count = Following.objects.filter(user__id = user.id).count()  # Number of people this user is following
+        following_instance = Following.objects.filter(user__id = user.id).first()
+        if not following_instance:
+            following_instance = Following(user=user)
+            following_instance.save()
+
+        following_count = Following.objects.filter(user__id = user.id).first().following.count()  # Number of people this user is following
         followers_count = user.followers.count()  # Number of people following this user
 
      # Create a dictionary with user data
