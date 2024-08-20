@@ -229,6 +229,8 @@ function load_post(id) {
 function all_posts(username) {
     document.querySelector('#all-posts-view').style.display = 'block';
     document.querySelector('#create_post_form').addEventListener('submit', new_post);
+    loadingMessage = document.querySelector('#loading_message');
+
 
     const all_post_view = document.querySelector('#all-posts-view');
     let url = '/all_posts';
@@ -244,12 +246,21 @@ function all_posts(username) {
         })
         .then(postsData => {
             all_post_view.innerHTML = ''; // Clear previous posts
-            console.log(postsData);
-            postsData.posts.forEach(post => {
-                const newPostElement = createPostElement(post);
-                all_post_view.appendChild(newPostElement);
-                all_post_view.appendChild(document.createElement('hr'));
-            });
+            if (postsData.posts.length === 0) {
+                if (username === 'following') {
+                    loadingMessage.innerHTML = '<span class="text-muted">Follow users to load content!</span>';
+                } else {
+                    loadingMessage.innerHTML = '<span class="text-muted">Share your first idea in the box above!</span>';
+                }
+                loadingMessage.classList.add('fade-in');
+            } else {
+                postsData.posts.forEach(post => {
+                    const newPostElement = createPostElement(post);
+                    all_post_view.appendChild(newPostElement);
+                    all_post_view.appendChild(document.createElement('hr'));
+                });
+                loadingMessage.display = "None"
+            }
         })
         .catch(error => {
             console.error('Error fetching posts:', error);
@@ -701,4 +712,9 @@ function profile_page() {
 
 function hashtag_posts(element) {
     all_posts_hashtag(element.originalTarget.attributes['tag'].nodeValue)
+}
+
+function user_profile(username) {
+    load_profile(username)
+    all_posts(username)
 }

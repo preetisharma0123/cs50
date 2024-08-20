@@ -33,6 +33,7 @@
                 </div>
             </form>
             <div class="mt-3" id="all-posts-view"></div>
+            <div class="mt-3" id="loading_message"></div>
         </div>
         <div class="col-3 d-none d-lg-block" id="right-container">
             <div class="card overflow-hidden">
@@ -47,7 +48,7 @@
                     </div>
                     <div class="card-body">
                             {% for user in popular_users %}
-                                <a href="#" onclick="load_profile('{{ user.username }}')">@{{ user.username }} ({{ user.num_followers }})</a>
+                                <a href="#" onclick="user_profile('{{ user.username }}')">@{{ user.username }} ({{ user.num_followers }})</a>
                             {% endfor %}
                     </div>
                 </div>
